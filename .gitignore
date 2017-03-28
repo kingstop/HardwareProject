@@ -2,8 +2,8 @@
 ## Unity
 #################
 *.log
-client/pushmole/Library
-client/pushmole/obj
+BuyuSources/NewClient/Library
+BuyuSources/NewClient/obj
 *.opendb
 
 
