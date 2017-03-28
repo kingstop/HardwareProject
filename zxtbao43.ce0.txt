@@ -1,0 +1,42 @@
+﻿
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# Explicit paths specified without -i or -o; assuming --only paths...
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	modified:   .gitignore
+#	new file:   BuyuSources/Database/Navicat for MySQL/dparser.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/freetype6.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/libcairo-2.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/libcurl.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/libdd.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/libeay32.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/libexpat-1.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/libfontconfig-1.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/libmysql_e.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/libpng14-14.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/msvcp110.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/msvcr110.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/navicat.exe
+#	new file:   BuyuSources/Database/Navicat for MySQL/nparser.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/scilexer.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/sqlite3.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/sshmgr.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/ssleay32.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/updater.dll
+#	new file:   BuyuSources/Database/Navicat for MySQL/zlib1.dll
+#	new file:   BuyuSources/Database/fishgame.sql
+#	new file:   BuyuSources/Database/fishlog_NoData.sql
+#	new file:   BuyuSources/server/Database/fishgame.sql
+#	new file:   BuyuSources/server/Database/fishlog_NoData.sql
+#
+# Untracked files:
+#	BuyuSources/ServerCore/
+#	BuyuSources/ServerDir/
+#	BuyuSources/server/Database/Navicat for MySQL/
+#	BuyuSources/server/ServerDir/
+#	rgcfwb1l.5qp.txt
+#
+
