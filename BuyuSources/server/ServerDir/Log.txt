@@ -22,3 +22,5 @@
 ╤оят[2017 3 21 10:20:6]: FishServer.cpp FishServer::SendNetCmdToControl 613
 ╤оят[2017 3 21 10:20:6]: FishServer.cpp FishServer::SendNetCmdToControl 613
 ╤оят[2017 3 21 10:20:7]: FishServer.cpp FishServer::SendNetCmdToControl 7448
+╤оят[2017 3 29 15:51:51]: FishServer.cpp FishServer::OnHandleClearFishDB 6025
+╤оят[2017 3 29 15:51:53]: FishServer.cpp FishServer::HandleGameServerMsg 632
