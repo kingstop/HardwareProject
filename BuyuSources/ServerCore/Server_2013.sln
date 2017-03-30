@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CentralServer", "SourceCode\CentralServer\CentralServer.vcxproj", "{CA8D8F42-4E05-48AC-A6BE-9221A597F5CD}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -53,6 +53,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MiniGameServer", "SourceCod
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NewFTPServer", "SourceCode\NewFTPServer\NewFTPServer.vcxproj", "{FF60D4C6-BB0A-4CC8-8520-7FBB58601162}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GMServerTool", "GMServerTool\GMServerTool.vcxproj", "{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,6 +152,14 @@ Global
 		{FF60D4C6-BB0A-4CC8-8520-7FBB58601162}.Release|Win32.Build.0 = Release|Win32
 		{FF60D4C6-BB0A-4CC8-8520-7FBB58601162}.Release|x64.ActiveCfg = Release|x64
 		{FF60D4C6-BB0A-4CC8-8520-7FBB58601162}.Release|x64.Build.0 = Release|x64
+		{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}.Debug|Win32.Build.0 = Debug|Win32
+		{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}.Debug|x64.ActiveCfg = Debug|x64
+		{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}.Debug|x64.Build.0 = Debug|x64
+		{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}.Release|Win32.ActiveCfg = Release|Win32
+		{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}.Release|Win32.Build.0 = Release|Win32
+		{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}.Release|x64.ActiveCfg = Release|x64
+		{4A7FAFE9-7321-4463-B4EC-091F9ED8A423}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
