@@ -37,6 +37,7 @@ public:
 	void SendNetCmdToAllServer(NetCmd* pCmd);
 	void SendNetCmdToLogDB(NetCmd* pCmd);
 	void SendNetCmdToMiniGame(NetCmd* pCmd);
+	void SendNtCmdToGMTool(NetCmd* pCmd);
 	
 
 	FishConfig& GetFishConfig(){ return m_FishConfig; }
@@ -55,6 +56,7 @@ private:
 
 	void HandleClientMsg(ServerClientData* pClient, NetCmd* pCmd);
 	void HandleServerMsg(ServerClientData* pClient, NetCmd* pCmd);
+	void HandleGMToolMsg(ServerClientData* pClient, NetCmd* pCmd);
 	void HandleDataBaseMsg(NetCmd* pCmd);
 
 	void HandleAllMsg();

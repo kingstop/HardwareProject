@@ -2746,127 +2746,150 @@ bool FishServer::HandleControlMsg(NetCmd* pCmd)
 	}
 	switch (pCmd->SubCmdType)
 	{
+	case GM_CL_QUERY_ALL_USER_INFO:
+	{
+		CE_GM_QueryAllUserACK msg;
+		msg.count = 0;
+		msg.end = false;
+		SetMsgInfo(msg, GetMsgType(Main_Control, CE_GM_QUERY_ALL_USER_ACK), sizeof(CE_GM_QueryAllUserACK));
+		const HashMap<DWORD, CenterRole*>* roles = m_RoleManager.GetOnlineRole();
+		HashMap<DWORD, CenterRole*>::const_iterator it = roles->begin();
+		for (; it != roles->end(); ++ it)
+		{
+			if (msg.count == MAXQUERYALLUSERINFO)
+			{
+				SendNetCmdToControl(&msg);
+				msg.count = 0;
+			}
+			msg.CenterRole[msg.count] = it->second->GetRoleInfo();
+			msg.count++;
+		}
+		msg.end = true;
+		SendNetCmdToControl(&msg);
+
+	}
+	break;
 	case CL_SendMsgToAllGame:
+	{
+		CL_Cmd_SendMsgToAllGame* pMsg = (CL_Cmd_SendMsgToAllGame*)pCmd;
+		if (!pMsg)
 		{
-			CL_Cmd_SendMsgToAllGame* pMsg = (CL_Cmd_SendMsgToAllGame*)pCmd;
-			if (!pMsg)
-			{
-				ASSERT(false);
-				return false;
-			}
-			SendMessageByType(pMsg->CenterMessage,pMsg->MessageSize, MT_Center, pMsg->MessageColor, pMsg->StepNum, pMsg->StepSec, pMsg->Param);
-			return true;
+			ASSERT(false);
+			return false;
 		}
-		break;
+		SendMessageByType(pMsg->CenterMessage,pMsg->MessageSize, MT_Center, pMsg->MessageColor, pMsg->StepNum, pMsg->StepSec, pMsg->Param);
+		return true;
+	}
+	break;
 	case CL_SendSystemEmail://外部发送系统邮件
+	{
+		CL_Cmd_SendSystemEmail* pMsg = (CL_Cmd_SendSystemEmail*)pCmd;
+		if (!pMsg)
 		{
-			CL_Cmd_SendSystemEmail* pMsg = (CL_Cmd_SendSystemEmail*)pCmd;
-			if (!pMsg)
-			{
-				ASSERT(false);
-				return false;
-			}
-			//发送邮件
-			tagRoleMail	MailInfo;
-			MailInfo.bIsRead = false;
-			//比赛的内容需要特殊的处理 我们想要一个 特殊的转义字符串 客户端 和 服务器通用的 .
-			TCHARCopy(MailInfo.Context, CountArray(MailInfo.Context), pMsg->EmailContext, pMsg->ContextSize);
-			MailInfo.RewardID = static_cast<WORD>(pMsg->RewardID);
-			MailInfo.RewardSum = pMsg->RewardSum;
-			MailInfo.MailID = 0;
-			MailInfo.SendTimeLog = time(NULL);
-			MailInfo.SrcFaceID = 0;
-			TCHARCopy(MailInfo.SrcNickName, CountArray(MailInfo.SrcNickName), TEXT(""), 0);
-			MailInfo.SrcUserID = 0;//系统发送
-			MailInfo.bIsExistsReward = (MailInfo.RewardID != 0 && MailInfo.RewardSum != 0);
-			DBR_Cmd_AddUserMail msg;
-			SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
-			msg.dwDestUserID = pMsg->dwUserID;
-			msg.MailInfo = MailInfo;
-			g_FishServer.SendNetCmdToDB(&msg);
+			ASSERT(false);
+			return false;
+		}
+		//发送邮件
+		tagRoleMail	MailInfo;
+		MailInfo.bIsRead = false;
+		//比赛的内容需要特殊的处理 我们想要一个 特殊的转义字符串 客户端 和 服务器通用的 .
+		TCHARCopy(MailInfo.Context, CountArray(MailInfo.Context), pMsg->EmailContext, pMsg->ContextSize);
+		MailInfo.RewardID = static_cast<WORD>(pMsg->RewardID);
+		MailInfo.RewardSum = pMsg->RewardSum;
+		MailInfo.MailID = 0;
+		MailInfo.SendTimeLog = time(NULL);
+		MailInfo.SrcFaceID = 0;
+		TCHARCopy(MailInfo.SrcNickName, CountArray(MailInfo.SrcNickName), TEXT(""), 0);
+		MailInfo.SrcUserID = 0;//系统发送
+		MailInfo.bIsExistsReward = (MailInfo.RewardID != 0 && MailInfo.RewardSum != 0);
+		DBR_Cmd_AddUserMail msg;
+		SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
+		msg.dwDestUserID = pMsg->dwUserID;
+		msg.MailInfo = MailInfo;
+		g_FishServer.SendNetCmdToDB(&msg);
+		return true;
+	}
+	break;
+	case CL_KickUserByID:
+	{
+		CL_Cmd_KickUserByID* pMsg = (CL_Cmd_KickUserByID*)pCmd;//剔除缓存玩家数据
+		CenterRole* pRole = GetRoleManager().QueryCenterUser(pMsg->dwUserID);
+		if (!pRole)
+		{
+			GetCenterManager().SendNetCmdToAllLogonServer(pMsg);//告诉Logon 修改玩家的冻结状态
+
+			DBR_Cmd_SetAccountFreeze msgDB;
+			SetMsgInfo(msgDB, DBR_SetAccountFreeze, sizeof(DBR_Cmd_SetAccountFreeze));
+			msgDB.dwUserID = pMsg->dwUserID;
+			msgDB.FreezeMin = pMsg->FreezeMin;
+			SendNetCmdToDB(&msgDB);
+
+			//将结果返回给控制器
+			LC_Cmd_KickUserResult msg;
+			SetMsgInfo(msg, GetMsgType(Main_Control, LC_KickUserResult), sizeof(LC_Cmd_KickUserResult));
+			msg.dwUserID = pMsg->dwUserID;
+			msg.Result = 1;//玩家不在线 冻结账号成功
+			msg.ClientID = pMsg->ClientID;
+			SendNetCmdToControl(&msg);
 			return true;
 		}
-		break;
-	case CL_KickUserByID:
+		else
 		{
-			CL_Cmd_KickUserByID* pMsg = (CL_Cmd_KickUserByID*)pCmd;//剔除缓存玩家数据
-			CenterRole* pRole = GetRoleManager().QueryCenterUser(pMsg->dwUserID);
-			if (!pRole)
-			{
-				GetCenterManager().SendNetCmdToAllLogonServer(pMsg);//告诉Logon 修改玩家的冻结状态
-
-				DBR_Cmd_SetAccountFreeze msgDB;
-				SetMsgInfo(msgDB, DBR_SetAccountFreeze, sizeof(DBR_Cmd_SetAccountFreeze));
-				msgDB.dwUserID = pMsg->dwUserID;
-				msgDB.FreezeMin = pMsg->FreezeMin;
-				SendNetCmdToDB(&msgDB);
-
-				//将结果返回给控制器
-				LC_Cmd_KickUserResult msg;
-				SetMsgInfo(msg, GetMsgType(Main_Control, LC_KickUserResult), sizeof(LC_Cmd_KickUserResult));
-				msg.dwUserID = pMsg->dwUserID;
-				msg.Result = 1;//玩家不在线 冻结账号成功
-				msg.ClientID = pMsg->ClientID;
-				SendNetCmdToControl(&msg);
-				return true;
-			}
-			else
-			{
-				GetCenterManager().SendNetCmdToAllLogonServer(pMsg);
-				pRole->SendDataToGameServer(pMsg);
-				return true;
-			}
+			GetCenterManager().SendNetCmdToAllLogonServer(pMsg);
+			pRole->SendDataToGameServer(pMsg);
+			return true;
 		}
-		break;
+	}
+	break;
 	case CL_QueryOnlineUserInfo:
+	{
+		CL_Cmd_QueryOnlineUserInfo* pMsg = (CL_Cmd_QueryOnlineUserInfo*)pCmd;
+		if (!pMsg)
 		{
-			CL_Cmd_QueryOnlineUserInfo* pMsg = (CL_Cmd_QueryOnlineUserInfo*)pCmd;
-			if (!pMsg)
-			{
-				ASSERT(false);
-				return false;
-			}
-			CenterRole* pRole = GetRoleManager().QueryCenterUser(pMsg->dwUserID);
-			if (pRole)
-			{
-				pRole->SendDataToGameServer(pMsg);
-				return true;
-			}
-			else
-			{
-				LC_Cmd_QueryOnlineUserInfo msg;
-				SetMsgInfo(msg, GetMsgType(Main_Control, LC_QueryOnlineUserInfo), sizeof(LC_Cmd_QueryOnlineUserInfo));
-				msg.ClientID = pMsg->ClientID;
-				msg.Result = false;
-				SendNetCmdToControl(&msg);
-				return true;
-			}
+			ASSERT(false);
+			return false;
 		}
-		break;
+		CenterRole* pRole = GetRoleManager().QueryCenterUser(pMsg->dwUserID);
+		if (pRole)
+		{
+			pRole->SendDataToGameServer(pMsg);
+			return true;
+		}
+		else
+		{
+			LC_Cmd_QueryOnlineUserInfo msg;
+			SetMsgInfo(msg, GetMsgType(Main_Control, LC_QueryOnlineUserInfo), sizeof(LC_Cmd_QueryOnlineUserInfo));
+			msg.ClientID = pMsg->ClientID;
+			msg.Result = false;
+			SendNetCmdToControl(&msg);
+			return true;
+		}
+	}
+	break;
 	case CL_ChangeaNickName:
+	{
+		CL_Cmd_ChangeaNickName* pMsg = (CL_Cmd_ChangeaNickName*)pCmd;
+		if (!pMsg)
 		{
-			CL_Cmd_ChangeaNickName* pMsg = (CL_Cmd_ChangeaNickName*)pCmd;
-			if (!pMsg)
-			{
-				ASSERT(false);
-				return false;
-			}
-			CenterRole* pRole = GetRoleManager().QueryCenterUser(pMsg->dwUserID);
-			if (pRole)
-			{
-				pRole->SendDataToGameServer(pMsg);
-				return true;
-			}
-			else
-			{
-				DBR_Cmd_SaveRoleNickName msgDB;
-				SetMsgInfo(msgDB, DBR_SaveRoleNickName, sizeof(DBR_Cmd_SaveRoleNickName));
-				msgDB.dwUserID = pMsg->dwUserID;
-				TCHARCopy(msgDB.NickName, CountArray(msgDB.NickName), pMsg->NickName, _tcslen(pMsg->NickName));
-				g_FishServer.SendNetCmdToDB(&msgDB);
-			}
+			ASSERT(false);
+			return false;
 		}
-		break;
+		CenterRole* pRole = GetRoleManager().QueryCenterUser(pMsg->dwUserID);
+		if (pRole)
+		{
+			pRole->SendDataToGameServer(pMsg);
+			return true;
+		}
+		else
+		{
+			DBR_Cmd_SaveRoleNickName msgDB;
+			SetMsgInfo(msgDB, DBR_SaveRoleNickName, sizeof(DBR_Cmd_SaveRoleNickName));
+			msgDB.dwUserID = pMsg->dwUserID;
+			TCHARCopy(msgDB.NickName, CountArray(msgDB.NickName), pMsg->NickName, _tcslen(pMsg->NickName));
+			g_FishServer.SendNetCmdToDB(&msgDB);
+		}
+	}
+	break;
 	case CL_ReloadConfig:
 		{
 			OnReloadConfig();

@@ -64,6 +64,7 @@ BEGIN_MESSAGE_MAP(CGMServerToolDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_MOVE()
 END_MESSAGE_MAP()
 
 
@@ -72,7 +73,7 @@ END_MESSAGE_MAP()
 BOOL CGMServerToolDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
+	
 	// 将“关于...”菜单项添加到系统菜单中。
 
 	// IDM_ABOUTBOX 必须在系统命令范围内。
@@ -97,9 +98,23 @@ BOOL CGMServerToolDlg::OnInitDialog()
 	//  执行此操作
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
+	DlgLogin *DlgLoginTemp = new DlgLogin(this);
+	DlgLoginTemp->Create(IDD_DIALOG_LOGIN, this);	
+	DlgLoginTemp->ShowWindow(1);
 
+	_dlgs[LoginDlg_Type] = DlgLoginTemp;	
+	DlgGMToolListPage * DlgGMToolList = new DlgGMToolListPage(this);
+	DlgGMToolList->Create(IDD_DIALOG_CMD_LIST, this);
+	_dlgs[CmdPage_Type] = DlgGMToolList;
+	std::map<DlgType, CDialogEx*>::iterator it = _dlgs.begin();
+	for (; it != _dlgs.end(); ++ it)
+	{
+		CDialogEx* dlg = it->second;
+		dlg->ActivateTopParent();
+	}
+	g_GMToolManager.Init();
 	// TODO: 在此添加额外的初始化代码
-
+	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -152,3 +167,23 @@ HCURSOR CGMServerToolDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CGMServerToolDlg::OnMove(int x, int y)
+{
+	CDialogEx::OnMove(x, y);
+
+
+	
+	CRect rcClient;
+	GetClientRect(rcClient);
+	ClientToScreen(rcClient);
+	std::map<DlgType, CDialogEx*>::iterator it = _dlgs.begin();
+	for (; it != _dlgs.end(); ++ it)
+	{
+		CDialogEx* dlg = it->second;
+		dlg->MoveWindow(rcClient);	
+	}
+
+	// TODO: 在此处添加消息处理程序代码
+}

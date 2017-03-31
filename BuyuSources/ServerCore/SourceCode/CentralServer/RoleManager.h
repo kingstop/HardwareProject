@@ -56,7 +56,7 @@ public:
 	bool OnDelCenterRole(DWORD dwUserID);
 	bool OnPlazaLeave(BYTE dwSocketID);
 	void SetCenterUserFinish(DWORD dwUserID);
-
+	const HashMap<DWORD, CenterRole*>* GetOnlineRole() { return &m_RoleMap; }
 	CenterRole* QueryCenterUser(DWORD dwUserID);
 
 	DWORD	GetOnLinePlayerSum(){ return m_RoleMap.size(); }

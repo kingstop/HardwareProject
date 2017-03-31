@@ -3,7 +3,11 @@
 //
 
 #pragma once
-
+enum DlgType
+{
+	LoginDlg_Type,
+	CmdPage_Type,
+};
 
 // CGMServerToolDlg 对话框
 class CGMServerToolDlg : public CDialogEx
@@ -24,11 +28,15 @@ public:
 // 实现
 protected:
 	HICON m_hIcon;
-
+	std::map<DlgType, CDialogEx*> _dlgs;
+	
+	
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnMove(int x, int y);
 };

@@ -122,5 +122,7 @@ private:
 
 	//»úÆ÷ÈË
 	RobotManager								m_RobotManager;
+	std::string									m_account;
+	std::string									m_password;
 };
 extern FishServer g_FishServer;

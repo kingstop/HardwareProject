@@ -452,5 +452,6 @@ ApppayPrvKey="MIICXQIBAAKBgQCL061Vgr3PSSy2vFulL4r1ReVOhoB8kqhfPcREGuyZ5F52dV/Mjv
 		BeginRobotUserID="0" EndRobotUserID="0"
               DBNetworkID ="6"
 	      LogDBNetworkID="10"/>
+<GMToolClient NetworkID="1030" password="321" account="654"/>
   
 </FishServer>

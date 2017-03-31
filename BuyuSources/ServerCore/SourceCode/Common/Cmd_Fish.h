@@ -7727,17 +7727,17 @@ enum ControlSub
 	LC_OperateInfo = 26,
 	LC_MiNiGameInfo = 27,
 	CL_QueryFishPool = 28,//查询库存
-	LC_QueryFishPoolResult=29,//查询库存结果
+	LC_QueryFishPoolResult = 29,//查询库存结果
 	CL_QueryBlackList = 30,//查询黑名单
 	LC_QueryBlackListResult = 31,//查询黑名单结果
 	CL_SetBlackList = 32,//设置黑名单
-	LC_SetBlackListResult=33,//设置黑名单结果
-	CL_OxAdmin=40,//牛牛控制
-	LC_OxAdmin=41,//牛牛控制
-	LC_OxAdminQueryName=42,//查询名字
+	LC_SetBlackListResult = 33,//设置黑名单结果
+	CL_OxAdmin = 40,//牛牛控制
+	LC_OxAdmin = 41,//牛牛控制
+	LC_OxAdminQueryName = 42,//查询名字
 	LC_OxAdminQueryAllJetton = 43,//查询所有
 	LC_OxAdminQueryPlayerJetton = 44,//
-	
+
 	CL_AnimalAdmin = 45,////舞会控制
 	LC_AnimalAdmin = 46,//
 	LC_AnimalAdminQueryName = 47,//查询名字
@@ -7749,6 +7749,13 @@ enum ControlSub
 	LC_CarAdminQueryName = 52,//查询名字
 	LC_CarAdminQueryAllJetton = 53,//查询所有
 	LC_CarAdminQueryPlayerJetton = 54,//
+
+	///new
+	GM_CL_CHECK_PASSWORD_REQ = 100,
+	CL_GM_CHECK_PASSWORD_ACK = 101,
+	GM_CL_QUERY_ALL_USER_INFO = 102,
+	CE_GM_QUERY_ALL_USER_ACK = 103
+
 };
 //牛牛,舞会,碰碰车通用
 enum  CONTROL_COMMON_INNER//通用控制代码,,返回状态
@@ -7772,11 +7779,60 @@ enum  CONTROL_COMMON_INNER//通用控制代码,,返回状态
 	CR_REFUSAL = 14,			//拒
 };
 
+///GMYOOL
+#define MAXQUERYALLUSERINFO 40
+struct CE_GM_QueryAllUserACK : public NetCmd
+{
+	CE_GM_QueryAllUserACK()
+	{
+		SubCmdType = CE_GM_QUERY_ALL_USER_ACK;
+		CmdType = Main_Control;
+	}
+	tagCenterRoleInfo CenterRole[MAXQUERYALLUSERINFO];
+	BYTE count;
+	bool end;
+};
+
+struct GM_CL_QueryAllUserInfoReq : public NetCmd
+{
+	GM_CL_QueryAllUserInfoReq()
+	{
+		SubCmdType = GM_CL_QUERY_ALL_USER_INFO;
+		CmdType = Main_Control;
+	}
+
+};
+
+struct GM_CL_Cmd_CheckPassWordReq : public NetCmd
+{
+	GM_CL_Cmd_CheckPassWordReq()
+	{
+		SubCmdType = GM_CL_CHECK_PASSWORD_REQ;
+		CmdType = Main_Control;
+	}
+	char			PassWord[255];
+	char			Account[255];
+};
+
+
+
+struct CL_GM_Cmd_CheckPassWordACK : public NetCmd
+{
+	CL_GM_Cmd_CheckPassWordACK()
+	{
+		SubCmdType = CL_GM_CHECK_PASSWORD_ACK;
+		CmdType = Main_Control;
+	}
+	bool ret;
+};
+///GMYOOL
 struct CL_Cmd_CheckClientInfo : public NetCmd
 {
 	DWORD			RankValue;
 	char			MachineCode[MAC_LENGTH];
 };
+
+
 struct LC_Cmd_CheckClientInfo : public NetCmd
 {
 	bool			Result;

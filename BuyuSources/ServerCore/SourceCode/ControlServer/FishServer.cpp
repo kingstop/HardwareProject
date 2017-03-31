@@ -405,7 +405,15 @@ bool FishServer::MainUpdate()
 						continue;
 					}
 					//处理网络命令 客户端发送来的登陆 注册 等命令
-					HandleServerMsg(Iter->second, pCmd);
+					if (Iter->first == g_FishServer.GetFishConfig().GetGMToolConfig().NetID_)
+					{
+
+					}
+					else
+					{
+						HandleServerMsg(Iter->second, pCmd);
+					}
+					
 					free(pCmd);
 					++Sum;
 				}
@@ -469,6 +477,9 @@ void FishServer::SendNetCmdToLogDB(NetCmd* pCmd)
 	}
 	m_LogDBTcp.Send(pCmd, false);
 }
+
+
+
 void FishServer::HandleClientMsg(ServerClientData* pClient, NetCmd* pCmd)
 {
 	//处理外部发送来的处理命令
@@ -530,24 +541,18 @@ void FishServer::HandleClientMsg(ServerClientData* pClient, NetCmd* pCmd)
 
 	switch (pCmd->SubCmdType)
 	{
-		//case CL_CheckClientInfo:
-		//	{
-		//		CL_Cmd_CheckClientInfo* pMsg = (CL_Cmd_CheckClientInfo*)pCmd;
-		//		if (!pMsg)
-		//		{
-		//			ASSERT(false);
-		//			return;
-		//		}
-		//		LC_Cmd_CheckClientInfo msg;
-		//		SetMsgInfo(msg, GetMsgType(Main_Control, LC_CheckClientInfo), sizeof(LC_Cmd_CheckClientInfo));
-		//		msg.Result = (pMsg->RankValue == m_ControlRankValue);//登陆成功了 可以进入
-		//		SendNetCmdToClient(pClient, &msg);
-		//		if (!msg.Result)
-		//		{
-		//			pClient->Removed = true;
-		//		}
-		//		return;
-		//	}
+		
+	case GM_CL_QUERY_ALL_USER_INFO:
+	{
+		GM_CL_QueryAllUserInfoReq* pMsg = (GM_CL_QueryAllUserInfoReq*)pCmd;
+		if (!pMsg)
+		{
+			ASSERT(false);
+			return;
+		}
+		SendNetCmdToCenter(pMsg);
+	}
+	break;
 	case CL_SendMsgToAllGame:
 	{
 								CL_Cmd_SendMsgToAllGame* pMsg = (CL_Cmd_SendMsgToAllGame*)pCmd;
@@ -716,6 +721,279 @@ void FishServer::HandleClientMsg(ServerClientData* pClient, NetCmd* pCmd)
 	}
 	return;
 }
+
+
+void FishServer::HandleGMToolMsg(ServerClientData* pClient, NetCmd* pCmd)
+{
+	//处理外部发送来的处理命令
+	if (!pClient || !pCmd)
+	{
+		ASSERT(false);
+		return;
+	}
+	if (pCmd->CmdType != Main_Control)
+	{
+		ASSERT(false);
+		return;
+	}
+
+	if (pCmd->SubCmdType == GM_CL_CHECK_PASSWORD_REQ)
+	{
+		bool check = false;
+		GM_CL_Cmd_CheckPassWordReq* pMsg = (GM_CL_Cmd_CheckPassWordReq*)pCmd;
+		if (strcmp(g_FishServer.GetFishConfig().GetGMToolConfig().Account_.c_str(), pMsg->Account) && 
+			strcmp(g_FishServer.GetFishConfig().GetGMToolConfig().PassWord_.c_str(), pMsg->PassWord))
+		{
+
+			check = true;
+		}
+		if (!check)
+		{
+			pClient->Removed = true;
+		}
+		else
+		{
+			pClient->dwChecked = 1;
+		}
+		CL_GM_Cmd_CheckPassWordACK msg;
+		msg.ret = check;
+		SendNetCmdToClient(pClient, &msg);
+		
+	}
+	if (pCmd->SubCmdType == CL_CheckClientInfo)//先验证
+	{
+		CL_Cmd_CheckClientInfo* pMsg = (CL_Cmd_CheckClientInfo*)pCmd;
+		if (!pMsg)
+		{
+			ASSERT(false);
+			return;
+		}
+		bool bvaliddmac = false;
+		tinyxml2::XMLDocument xml_doc;
+		if (xml_doc.LoadFile("maclist.xml") == XML_SUCCESS)
+		{
+			XMLElement* xml_root = xml_doc.FirstChildElement("maclist");
+			if (xml_root)
+			{
+				for (const XMLElement* xml_child = xml_root->FirstChildElement(); xml_child; xml_child = xml_child->NextSiblingElement())
+				{
+					const char* pItem = xml_child->Attribute("mac");
+					if (pItem&&strcmp(pMsg->MachineCode, pItem) == 0)
+					{
+						bvaliddmac = true;
+						break;
+					}
+				}
+			}
+		}
+
+		LC_Cmd_CheckClientInfo msg;
+		SetMsgInfo(msg, GetMsgType(Main_Control, LC_CheckClientInfo), sizeof(LC_Cmd_CheckClientInfo));
+		msg.Result = (pMsg->RankValue == m_ControlRankValue&&bvaliddmac);//登陆成功了 可以进入
+		SendNetCmdToClient(pClient, &msg);
+		if (!msg.Result)
+		{
+			pClient->Removed = true;
+		}
+		else
+		{
+			pClient->dwChecked = 1;
+		}
+		return;
+	}
+	if (pClient->dwChecked == 0)
+	{
+		return;
+	}
+
+	switch (pCmd->SubCmdType)
+	{
+		//case CL_CheckClientInfo:
+		//	{
+		//		CL_Cmd_CheckClientInfo* pMsg = (CL_Cmd_CheckClientInfo*)pCmd;
+		//		if (!pMsg)
+		//		{
+		//			ASSERT(false);
+		//			return;
+		//		}
+		//		LC_Cmd_CheckClientInfo msg;
+		//		SetMsgInfo(msg, GetMsgType(Main_Control, LC_CheckClientInfo), sizeof(LC_Cmd_CheckClientInfo));
+		//		msg.Result = (pMsg->RankValue == m_ControlRankValue);//登陆成功了 可以进入
+		//		SendNetCmdToClient(pClient, &msg);
+		//		if (!msg.Result)
+		//		{
+		//			pClient->Removed = true;
+		//		}
+		//		return;
+		//	}
+	case CL_SendMsgToAllGame:
+	{
+		CL_Cmd_SendMsgToAllGame* pMsg = (CL_Cmd_SendMsgToAllGame*)pCmd;
+		if (!pMsg)
+		{
+			ASSERT(false);
+			return;
+		}
+		SendNetCmdToCenter(pMsg);
+		return;
+	}
+	break;
+	case CL_SendSystemEmail:
+	{
+		CL_Cmd_SendSystemEmail* pMsg = (CL_Cmd_SendSystemEmail*)pCmd;
+		if (!pMsg)
+		{
+			ASSERT(false);
+			return;
+		}
+		SendNetCmdToCenter(pMsg);
+		return;
+	}
+	break;
+	case CL_ChangeaNickName:
+	{
+		CL_Cmd_ChangeaNickName* pMsg = (CL_Cmd_ChangeaNickName*)pCmd;
+		if (!pMsg)
+		{
+			ASSERT(false);
+			return;
+		}
+		SendNetCmdToCenter(pMsg);
+	}
+	break;
+	case CL_QueryOnlineUserInfo:
+	{
+		CL_Cmd_QueryOnlineUserInfo* pMsg = (CL_Cmd_QueryOnlineUserInfo*)pCmd;
+		if (!pMsg)
+		{
+			ASSERT(false);
+			return;
+		}
+		pMsg->ClientID = pClient->OutsideExtraData;//记录下客户端ID
+		SendNetCmdToCenter(pMsg);
+	}
+	break;
+	case CL_KickUserByID:
+	{
+		CL_Cmd_KickUserByID* pMsg = (CL_Cmd_KickUserByID*)pCmd;
+		pMsg->ClientID = pClient->OutsideExtraData;//记录下客户端ID
+		SendNetCmdToCenter(pMsg);
+		//SendNetCmdToAllGame(pMsg);
+		return;
+	}
+	break;
+	case CL_ReloadConfig:
+	{
+		OnReloadConfig();
+		SendNetCmdToAllServer(pCmd);
+		return;
+	}
+	break;
+	case CL_HandleEntityItem:
+	{
+		CL_Cmd_HandleEntityItem* pMsg = (CL_Cmd_HandleEntityItem*)pCmd;
+		pMsg->ClientID = pClient->OutsideExtraData;
+		pMsg->ClientIP = pClient->IP;
+		SendNetCmdToCenter(pMsg);
+		return;
+	}
+	break;
+	case CL_ResetRolePassword:
+	{
+		CL_Cmd_ResetRolePassword* pMsg = (CL_Cmd_ResetRolePassword*)pCmd;
+
+		DBR_Cmd_ResetUserPassword msg;
+		SetMsgInfo(msg, DBR_ResetUserPassword, sizeof(DBR_Cmd_ResetUserPassword));
+		msg.dwUserID = pMsg->dwUserID;
+		msg.Password1 = pMsg->Password1;
+		msg.Password2 = pMsg->Password2;
+		msg.Password3 = pMsg->Password3;
+		SendNetCmdToControlDB(&msg);
+
+		SendNetCmdToAllLogon(pMsg);
+		return;
+	}
+	break;
+	case CL_FreezeAccount:
+	{
+		CL_Cmd_FreezeAccount*pMsg = (CL_Cmd_FreezeAccount*)pCmd;
+
+		DBR_Cmd_FreezeUser msg;
+		SetMsgInfo(msg, DBR_FreezeUser, sizeof(DBR_Cmd_FreezeUser));
+		msg.dwUserID = pMsg->dwUserID;
+		msg.FreezeMin = pMsg->FreezeMin;
+		SendNetCmdToControlDB(&msg);
+
+		SendNetCmdToCenter(pMsg);
+		SendNetCmdToAllLogon(pMsg);
+		return;
+	}
+	case CL_ChangeParticularStates:
+	{
+		CL_Cmd_ChangeParticularStates*pMsg = (CL_Cmd_ChangeParticularStates*)pCmd;
+		pMsg->ClientID = pClient->OutsideExtraData;//记录下客户端ID
+		SendNetCmdToCenter(pMsg);
+		return;
+	}
+	case CL_QueryFishPool:
+	{
+		if (pCmd->GetCmdSize() == sizeof(CL_CMD_QueryFishPool))
+		{
+			((CL_CMD_QueryFishPool*)pCmd)->ClientID = pClient->OutsideExtraData;
+			SendNetCmdToAllGame(pCmd);
+		}
+		return;
+	}
+	case CL_QueryBlackList:
+	{
+
+		if (pCmd->GetCmdSize() == sizeof(LC_CMD_QueryFishBlackList))
+		{
+			((LC_CMD_QueryFishBlackList*)pCmd)->ClientID = pClient->OutsideExtraData;
+			SendNetCmdToAllGame(pCmd);
+		}
+		return;
+	}
+	case CL_SetBlackList:
+	{
+		if (pCmd->GetCmdSize() > sizeof(LC_CMD_SetFishBlackList))
+		{
+			((LC_CMD_SetFishBlackList*)pCmd)->ClientID = pClient->OutsideExtraData;
+			SendNetCmdToAllGame(pCmd);
+		}
+		return;
+	}
+	case CL_OxAdmin:
+	{
+		if (pCmd->GetCmdSize() == sizeof(CL_CMD_OxAdminReq))
+		{
+			((CL_CMD_OxAdminReq*)pCmd)->ClientID = pClient->OutsideExtraData;
+			SendNetCmdToMiniGame(pCmd);
+		}
+		break;
+	}
+	case CL_AnimalAdmin:
+	{
+		if (pCmd->GetCmdSize() == sizeof(CL_CMD_AnimalAdminReq))
+		{
+			((CL_CMD_AnimalAdminReq*)pCmd)->ClientID = pClient->OutsideExtraData;
+			SendNetCmdToMiniGame(pCmd);
+		}
+		break;
+	}
+	case CL_CarAdmin:
+	{
+		if (pCmd->GetCmdSize() == sizeof(CL_CMD_CarAdminReq))
+		{
+			((CL_CMD_CarAdminReq*)pCmd)->ClientID = pClient->OutsideExtraData;
+			SendNetCmdToMiniGame(pCmd);
+		}
+		break;
+	}
+
+	}
+	return;
+}
 void FishServer::HandleServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 {
 	//清理内部各个服务器发送来的命令
@@ -730,6 +1008,7 @@ void FishServer::HandleServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 		ASSERT(false);
 		return;
 	}
+	int GMNetID = GetFishConfig().GetGMToolConfig().NetID_;
 	switch (pCmd->SubCmdType)
 	{
 		//接收到其他服务器的数据 不保存 直接进行转发出去
@@ -745,6 +1024,11 @@ void FishServer::HandleServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 							SendNetCmdToAllClient(pCmd);
 							break;
 	}
+	case CE_GM_QUERY_ALL_USER_ACK:
+	{		
+		SendNtCmdToGMTool(pCmd);
+	}
+	break;
 	case LC_KickUserResult:
 	{
 							  LC_Cmd_KickUserResult* pMsg = (LC_Cmd_KickUserResult*)pCmd;
@@ -1275,6 +1559,21 @@ void  FishServer::SendNetCmdToControlDB(NetCmd* pCmd)
 		return;
 	}
 	if (!m_DBTcp.Send(pCmd, true))
+	{
+		ASSERT(false);
+	}
+}
+
+void FishServer::SendNtCmdToGMTool(NetCmd* pCmd)
+{
+	int NetID = GetFishConfig().GetGMToolConfig().NetID_;
+	HashMap<BYTE, ServerClientData*>::iterator Iter = m_ControlServerList.find(NetID);
+	if (Iter == m_ControlServerList.end())
+	{
+		ASSERT(false);
+		return;
+	}
+	if (!m_ServerTcp.Send(Iter->second, pCmd))
 	{
 		ASSERT(false);
 	}

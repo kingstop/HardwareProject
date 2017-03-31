@@ -36,7 +36,8 @@
 
 
 #include "Common.h"
-
+#include "../CommonFile/tinyxml/XmlReader.h"
+#include "../CommonFile/FishServerConfig.h"
 
 
 
@@ -52,3 +53,8 @@
 #endif
 
 
+
+#include "GMToolManager.h"
+#include "DlgLogin.h"
+#include "DlgGMToolListPage.h"
+extern GMToolManager g_GMToolManager;

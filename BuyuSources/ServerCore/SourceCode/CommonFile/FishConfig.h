@@ -11,6 +11,14 @@ enum StringCheckType
 	SCT_Normal		= 3,
 };
 
+
+struct tgGMToolConfig
+{
+	int NetID_;
+	std::string PassWord_;
+	std::string Account_;
+};
+
 class FishConfig
 {
 public:
@@ -19,9 +27,8 @@ public:
 
 	bool LoadConfigFilePath();
 	void OnDestroy();
+	std::string TCHAR2STRING(TCHAR *STR);
 
-	//void OnDayChange();
-	//void OnInitGlobelData();
 
 	RoleCheckConfig& GetCheckConfig(){ return m_CheckConfig; }
 	tagTaskMap&		 GetTaskConfig(){ return m_TaskConfig; }
@@ -60,13 +67,15 @@ public:
 	tagFishDropConfig& GetFishDropConfig(){ return m_FishDropConfig; }
 	tagMiNiGameConfig& GetFishMiNiGameConfig(){ return m_MiniGameConfig; }
 	tagGameRobotInfo& GetFishGameRobotConfig(){ return m_GameRobotConfig; }
-
+	
+	tgGMToolConfig& GetGMToolConfig() { return m_GMTool; }
 	DWORD GetWriteSec();
 	bool CheckVersionAndPathCrc(DWORD VersionID, DWORD PathCrc);
 
 	bool CheckStringIsError(TCHAR* pStr, DWORD MinLength, DWORD MaxLength, StringCheckType pType);
 
 	bool LoadFishNoticeConfig(const TCHAR* FilePath);
+	bool LoadGMToolConfig(const TCHAR* FilePath);
 	bool LoadRobotConfig(const TCHAR* FilePath);
 	HashMap<DWORD, tagNotice>& GetAllNoticeInfo(){ return m_NoticeMap; }
 private:
@@ -143,6 +152,6 @@ private:
 	tagMiNiGameConfig			m_MiniGameConfig;
 
 	tagGameRobotInfo			m_GameRobotConfig;
-
+	tgGMToolConfig				m_GMTool;
 	HashMap<DWORD,tagNotice>	m_NoticeMap;//公告的结构
 };

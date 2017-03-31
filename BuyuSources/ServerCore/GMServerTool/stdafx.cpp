@@ -6,3 +6,4 @@
 #include "stdafx.h"
 
 
+GMToolManager g_GMToolManager;

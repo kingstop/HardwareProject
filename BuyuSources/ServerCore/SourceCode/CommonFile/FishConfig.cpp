@@ -2716,6 +2716,53 @@ bool FishConfig::GetStrIndeof(TCHAR* pStr, TCHAR* FindStr)
 	else
 		return false;
 }
+
+std::string FishConfig::TCHAR2STRING(TCHAR *STR)
+{
+
+	int iLen = WideCharToMultiByte(CP_ACP, 0,STR, -1, NULL, 0, NULL, NULL);
+	char* chRtn = new char[iLen*sizeof(char)];
+	WideCharToMultiByte(CP_ACP, 0, STR, -1, chRtn, iLen, NULL, NULL);
+	std::string str(chRtn);
+	return str;
+}
+
+
+
+bool FishConfig::LoadGMToolConfig(const TCHAR* FilePath)
+{
+	WHXml pXml;
+	if (!pXml.LoadXMLFilePath(FilePath))
+	{
+		ASSERT(false);
+		return false;
+	}
+
+	WHXmlNode* pGMTool = pXml.GetChildNodeByName(TEXT("GMToolClient"));
+	if (!pGMTool)
+	{
+		if (pGMTool->GetAttribute(TEXT("NetworkID"), m_GMTool.NetID_) == false)
+		{
+			ASSERT(false);
+			return false;
+		}
+
+		TCHAR sz[512];
+		if (pGMTool->GetAttribute(TEXT("password"), sz, sizeof(sz)) == false)
+		{
+			ASSERT(false);
+			return false;
+		}
+		m_GMTool.PassWord_ = TCHAR2STRING(sz);
+		if (pGMTool->GetAttribute(TEXT("account"), sz, sizeof(sz)) == false)
+		{
+			ASSERT(false);
+			return false;
+		}
+		m_GMTool.Account_ = TCHAR2STRING(sz);
+	}
+}
+
 bool FishConfig::LoadFishNoticeConfig(const TCHAR* FilePath)
 {
 	WHXml pXml;
