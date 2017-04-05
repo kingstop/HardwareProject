@@ -240,6 +240,7 @@ bool GMToolManager::HandleControlMsg(NetCmd* pCmd)
 			if (msg->ret == true)
 			{
 				_login_successful = true;
+				g_dlg->LoginSucessful();
 			}
 		}
 

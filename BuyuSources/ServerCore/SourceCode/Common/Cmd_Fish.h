@@ -7753,8 +7753,8 @@ enum ControlSub
 	///new
 	GM_CL_CHECK_PASSWORD_REQ = 100,
 	CL_GM_CHECK_PASSWORD_ACK = 101,
-	GM_CL_QUERY_ALL_USER_INFO = 102,
-	CE_GM_QUERY_ALL_USER_ACK = 103
+	GM_CL_QUERY_USER_INFO = 102,
+	CE_GM_QUERY_USER_ACK = 103
 
 };
 //牛牛,舞会,碰碰车通用
@@ -7781,11 +7781,11 @@ enum  CONTROL_COMMON_INNER//通用控制代码,,返回状态
 
 ///GMYOOL
 #define MAXQUERYALLUSERINFO 40
-struct CE_GM_QueryAllUserACK : public NetCmd
+struct CE_GM_QueryUserACK : public NetCmd
 {
-	CE_GM_QueryAllUserACK()
+	CE_GM_QueryUserACK()
 	{
-		SubCmdType = CE_GM_QUERY_ALL_USER_ACK;
+		SubCmdType = CE_GM_QUERY_USER_ACK;
 		CmdType = Main_Control;
 	}
 	tagCenterRoleInfo CenterRole[MAXQUERYALLUSERINFO];
@@ -7793,11 +7793,11 @@ struct CE_GM_QueryAllUserACK : public NetCmd
 	bool end;
 };
 
-struct GM_CL_QueryAllUserInfoReq : public NetCmd
+struct GM_CL_QueryUserInfoReq : public NetCmd
 {
-	GM_CL_QueryAllUserInfoReq()
+	GM_CL_QueryUserInfoReq()
 	{
-		SubCmdType = GM_CL_QUERY_ALL_USER_INFO;
+		SubCmdType = GM_CL_QUERY_USER_INFO;
 		CmdType = Main_Control;
 	}
 

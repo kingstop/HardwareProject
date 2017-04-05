@@ -44,6 +44,6 @@ public:
 	afx_msg void OnMove(int x, int y);
 	DlgLogin* GetLogin();
 	DlgGMToolListPage* GetGMTool();
-
+	void LoginSucessful();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

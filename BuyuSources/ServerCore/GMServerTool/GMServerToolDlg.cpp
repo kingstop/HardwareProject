@@ -119,6 +119,13 @@ BOOL CGMServerToolDlg::OnInitDialog()
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
+
+void CGMServerToolDlg::LoginSucessful()
+{
+	_dlgs[LoginDlg_Type]->ShowWindow(FALSE);
+	_dlgs[CmdPage_Type]->ShowWindow(TRUE);
+}
+
 void CGMServerToolDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)

@@ -26,12 +26,14 @@ void DlgGMToolListPage::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST_CMD, _CMD_LIST);
 	DDX_Control(pDX, IDC_LIST2, m_ListCtrlRoles);
+	DDX_Control(pDX, IDC_COMBO_FIND_TYPE, _CBFindType);
 }
 
 
 BEGIN_MESSAGE_MAP(DlgGMToolListPage, CDialogEx)
 	ON_LBN_SELCHANGE(IDC_LIST_CMD, &DlgGMToolListPage::OnLbnSelchangeListCmd)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST2, &DlgGMToolListPage::OnLvnItemchangedList2)
+	ON_BN_CLICKED(IDC_BTN_FIND, &DlgGMToolListPage::OnBnClickedBtnFind)
 END_MESSAGE_MAP()
 
 
@@ -66,6 +68,7 @@ BOOL DlgGMToolListPage::OnInitDialog()
 	m_ListCtrlRoles.InsertColumn(6, TEXT("is_online"), LVCFMT_CENTER, 140, 50);
 	m_ListCtrlRoles.InsertColumn(7, TEXT("particular_state"), LVCFMT_CENTER, 140, 50);
 	m_ListCtrlRoles.InsertColumn(8, TEXT("game_id"), LVCFMT_CENTER, 140, 50);
+	RefrashRoleList();
 	return TRUE;
 }
 
@@ -122,4 +125,9 @@ void DlgGMToolListPage::RefrashRoleList()
 		sprintf_s(sz, "%u", role.GameID);
 		m_ListCtrlRoles.SetItemText(i, 8, (LPCTSTR)sz);
 	}
+}
+
+void DlgGMToolListPage::OnBnClickedBtnFind()
+{
+	// TODO: 在此添加控件通知处理程序代码
 }
