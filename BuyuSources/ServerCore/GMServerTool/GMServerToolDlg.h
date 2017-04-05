@@ -9,6 +9,9 @@ enum DlgType
 	CmdPage_Type,
 };
 
+class DlgLogin;
+class DlgGMToolListPage;
+
 // CGMServerToolDlg ¶Ô»°¿ò
 class CGMServerToolDlg : public CDialogEx
 {
@@ -39,4 +42,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnMove(int x, int y);
+	DlgLogin* GetLogin();
+	DlgGMToolListPage* GetGMTool();
+
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

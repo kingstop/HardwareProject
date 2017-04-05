@@ -407,7 +407,7 @@ bool FishServer::MainUpdate()
 					//处理网络命令 客户端发送来的登陆 注册 等命令
 					if (Iter->first == g_FishServer.GetFishConfig().GetGMToolConfig().NetID_)
 					{
-
+						HandleGMToolMsg(Iter->second, pCmd);
 					}
 					else
 					{
@@ -756,6 +756,7 @@ void FishServer::HandleGMToolMsg(ServerClientData* pClient, NetCmd* pCmd)
 			pClient->dwChecked = 1;
 		}
 		CL_GM_Cmd_CheckPassWordACK msg;
+		SetMsgInfo(msg, GetMsgType(Main_Control, CL_GM_CHECK_PASSWORD_ACK), sizeof(CL_GM_Cmd_CheckPassWordACK));
 		msg.ret = check;
 		SendNetCmdToClient(pClient, &msg);
 		
@@ -1314,7 +1315,14 @@ void FishServer::HandleAllMsg()
 			while (Iter->second->RecvList.HasItem())
 			{
 				NetCmd* pCmd = Iter->second->RecvList.GetItem();
-				HandleServerMsg(Iter->second, pCmd);
+				if (Iter->first == g_FishServer.GetFishConfig().GetGMToolConfig().NetID_)
+				{
+					HandleGMToolMsg(Iter->second, pCmd);
+				}
+				else
+				{
+					HandleServerMsg(Iter->second, pCmd);
+				}
 				free(pCmd);
 			}
 			++Iter;

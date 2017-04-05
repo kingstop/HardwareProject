@@ -14,6 +14,10 @@ public:
 	bool HandleControlMsg(NetCmd* pCmd);
 	void ConnectControl();
 	void SendNetCmdToControl(NetCmd*pCmd);
+	void StringToChar(const CString s, char *Destination);
+
+public:
+	const std::map<DWORD, tagCenterRoleInfo>* GetRoleList();
 protected:
 	void OnTcpClientConnect(TCPClient* pClient);
 	void OnTcpClientLeave(TCPClient* pClient);
@@ -23,6 +27,7 @@ public:
 	bool m_ControlIsConnect;
 	ControlServerConfig m_ControlServerConfig;
 	bool _login_successful;
+	std::map<DWORD, tagCenterRoleInfo> _RoleList;
 };
 
 

@@ -38,6 +38,17 @@ END_MESSAGE_MAP()
 
 void DlgLogin::OnBnClickedBtnLogin()
 {
+	CString acc;
+	CString password;
+	GetDlgItemText(IDC_EDT_ACCOUNT, acc);
+	GetDlgItemText(IDC_EDT_PASSWORD, password);
+	char * acc_temp = NULL;
+	g_GMToolManager.StringToChar(acc, acc_temp);
+	char * pd = NULL;
+	g_GMToolManager.StringToChar(password, pd);
+	g_GMToolManager.SendLoginReq(acc_temp, pd);
+	delete[] acc_temp;
+	delete[] pd;
 	// TODO: 在此添加控件通知处理程序代码
 }
 

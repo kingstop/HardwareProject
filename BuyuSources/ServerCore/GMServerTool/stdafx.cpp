@@ -7,3 +7,5 @@
 
 
 GMToolManager g_GMToolManager;
+
+CGMServerToolDlg* g_dlg = NULL;

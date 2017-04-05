@@ -27,7 +27,7 @@ public:
 
 	bool LoadConfigFilePath();
 	void OnDestroy();
-	std::string TCHAR2STRING(TCHAR *STR);
+	void TCHAR2STRING(TCHAR *STR, std::string& out);
 
 
 	RoleCheckConfig& GetCheckConfig(){ return m_CheckConfig; }

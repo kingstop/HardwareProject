@@ -53,8 +53,12 @@
 #endif
 
 
-
+#include "GMServerToolDlg.h"
 #include "GMToolManager.h"
+
 #include "DlgLogin.h"
 #include "DlgGMToolListPage.h"
+
 extern GMToolManager g_GMToolManager;
+class CGMServerToolDlg;
+extern CGMServerToolDlg* g_dlg;

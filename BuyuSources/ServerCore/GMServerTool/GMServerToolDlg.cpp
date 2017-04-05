@@ -65,6 +65,7 @@ BEGIN_MESSAGE_MAP(CGMServerToolDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_MOVE()
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -73,7 +74,7 @@ END_MESSAGE_MAP()
 BOOL CGMServerToolDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	
+	g_dlg = this;
 	// 将“关于...”菜单项添加到系统菜单中。
 
 	// IDM_ABOUTBOX 必须在系统命令范围内。
@@ -101,7 +102,7 @@ BOOL CGMServerToolDlg::OnInitDialog()
 	DlgLogin *DlgLoginTemp = new DlgLogin(this);
 	DlgLoginTemp->Create(IDD_DIALOG_LOGIN, this);	
 	DlgLoginTemp->ShowWindow(1);
-
+	SetTimer(0, 100, 0);
 	_dlgs[LoginDlg_Type] = DlgLoginTemp;	
 	DlgGMToolListPage * DlgGMToolList = new DlgGMToolListPage(this);
 	DlgGMToolList->Create(IDD_DIALOG_CMD_LIST, this);
@@ -168,6 +169,15 @@ HCURSOR CGMServerToolDlg::OnQueryDragIcon()
 }
 
 
+DlgLogin* CGMServerToolDlg::GetLogin()
+{
+	return (DlgLogin*)_dlgs[LoginDlg_Type];
+}
+DlgGMToolListPage* CGMServerToolDlg::GetGMTool()
+{
+	return (DlgGMToolListPage*)_dlgs[CmdPage_Type];
+}
+
 
 void CGMServerToolDlg::OnMove(int x, int y)
 {
@@ -186,4 +196,13 @@ void CGMServerToolDlg::OnMove(int x, int y)
 	}
 
 	// TODO: 在此处添加消息处理程序代码
+}
+
+
+void CGMServerToolDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CDialogEx::OnTimer(nIDEvent);
+	g_GMToolManager.Update();
 }

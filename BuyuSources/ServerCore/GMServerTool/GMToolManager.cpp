@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GMToolManager.h"
-
+#define MAX_STRINGLENGTH 1024
 
 GMToolManager::GMToolManager()
 {
@@ -11,6 +11,21 @@ GMToolManager::GMToolManager()
 
 GMToolManager::~GMToolManager()
 {
+}
+
+void GMToolManager::StringToChar(const CString s, char *Destination)
+{
+	int k = 0;
+	wchar_t *inf = NULL;
+	inf = new wchar_t[MAX_STRINGLENGTH];
+	wcscpy(inf, s);
+	k = WideCharToMultiByte(CP_ACP, 0, inf, -1, NULL, 0, NULL, 0);
+	k = WideCharToMultiByte(CP_ACP, 0, inf, k, Destination, k, NULL, 0);
+	if (inf != NULL)
+	{
+		delete[]inf;
+		inf = NULL;
+	}
 }
 
 bool GMToolManager::Init()
@@ -232,7 +247,21 @@ bool GMToolManager::HandleControlMsg(NetCmd* pCmd)
 		{
 			switch (pCmd->SubCmdType)
 			{
+			case CE_GM_QUERY_ALL_USER_ACK:
+			{
+				CE_GM_QueryAllUserACK* msg = (CE_GM_QueryAllUserACK*)pCmd;
+				for (int i = 0; i < msg->count; i ++)
+				{
+					_RoleList[msg->CenterRole[i].dwUserID] = msg->CenterRole[i];
+				}
+				
+				if (msg->end)
+				{
+					g_dlg->GetGMTool()->RefrashRoleList();
 
+				}
+			}
+			break;
 			default:
 				break;
 			}
@@ -260,7 +289,7 @@ void GMToolManager::OnTcpClientLeave(TCPClient* pClient)
 void GMToolManager::SendLoginReq(const char* Account, const char* PassWord)
 {
 	GM_CL_Cmd_CheckPassWordReq msg;
-	
+	SetMsgInfo(msg, GetMsgType(Main_Control, GM_CL_CHECK_PASSWORD_REQ), sizeof(GM_CL_Cmd_CheckPassWordReq));
 	sprintf_s(msg.Account, "%s", Account);
 	sprintf_s(msg.PassWord, "%s", PassWord);
 	_ControlTcp.Send(&msg, false);	
@@ -282,4 +311,9 @@ void GMToolManager::OnTcpClientConnect(TCPClient* pClient)
 		ASSERT(false);
 	}
 	return;
+}
+
+const std::map<DWORD, tagCenterRoleInfo>* GMToolManager::GetRoleList()
+{
+	return &_RoleList;
 }
