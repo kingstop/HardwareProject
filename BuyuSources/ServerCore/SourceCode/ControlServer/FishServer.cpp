@@ -542,17 +542,6 @@ void FishServer::HandleClientMsg(ServerClientData* pClient, NetCmd* pCmd)
 	switch (pCmd->SubCmdType)
 	{
 		
-	case GM_CL_QUERY_ALL_USER_INFO:
-	{
-		GM_CL_QueryAllUserInfoReq* pMsg = (GM_CL_QueryAllUserInfoReq*)pCmd;
-		if (!pMsg)
-		{
-			ASSERT(false);
-			return;
-		}
-		SendNetCmdToCenter(pMsg);
-	}
-	break;
 	case CL_SendMsgToAllGame:
 	{
 								CL_Cmd_SendMsgToAllGame* pMsg = (CL_Cmd_SendMsgToAllGame*)pCmd;
@@ -588,6 +577,7 @@ void FishServer::HandleClientMsg(ServerClientData* pClient, NetCmd* pCmd)
 							   SendNetCmdToCenter(pMsg);
 	}
 		break;
+	
 	case CL_QueryOnlineUserInfo:
 	{
 								   CL_Cmd_QueryOnlineUserInfo* pMsg = (CL_Cmd_QueryOnlineUserInfo*)pCmd;
@@ -809,6 +799,17 @@ void FishServer::HandleGMToolMsg(ServerClientData* pClient, NetCmd* pCmd)
 
 	switch (pCmd->SubCmdType)
 	{
+	case GM_CL_QUERY_USER_INFO:
+	{
+		GM_CL_QueryUserInfoReq* pMsg = (GM_CL_QueryUserInfoReq*)pCmd;
+		if (!pMsg)
+		{
+			ASSERT(false);
+			return;
+		}
+		SendNetCmdToCenter(pMsg);
+	}
+	break;
 		//case CL_CheckClientInfo:
 		//	{
 		//		CL_Cmd_CheckClientInfo* pMsg = (CL_Cmd_CheckClientInfo*)pCmd;
@@ -1025,7 +1026,7 @@ void FishServer::HandleServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 							SendNetCmdToAllClient(pCmd);
 							break;
 	}
-	case CE_GM_QUERY_ALL_USER_ACK:
+	case CE_GM_QUERY_USER_ACK:
 	{		
 		SendNtCmdToGMTool(pCmd);
 	}

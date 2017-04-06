@@ -2746,27 +2746,50 @@ bool FishServer::HandleControlMsg(NetCmd* pCmd)
 	}
 	switch (pCmd->SubCmdType)
 	{
-	case GM_CL_QUERY_ALL_USER_INFO:
+	case GM_CL_QUERY_USER_INFO:
 	{
-		CE_GM_QueryAllUserACK msg;
+		GM_CL_QueryUserInfoReq * req = (GM_CL_QueryUserInfoReq *)pCmd;
+		CE_GM_QueryUserACK msg;
+		QueryUserType cur_type = (QueryUserType)req->Type;
 		msg.count = 0;
 		msg.end = false;
-		SetMsgInfo(msg, GetMsgType(Main_Control, CE_GM_QUERY_ALL_USER_ACK), sizeof(CE_GM_QueryAllUserACK));
+		SetMsgInfo(msg, GetMsgType(Main_Control, CE_GM_QUERY_USER_ACK), sizeof(CE_GM_QueryUserACK));
 		const HashMap<DWORD, CenterRole*>* roles = m_RoleManager.GetOnlineRole();
-		HashMap<DWORD, CenterRole*>::const_iterator it = roles->begin();
-		for (; it != roles->end(); ++ it)
+		if (cur_type != QueryUserType_ByNickName)
 		{
-			if (msg.count == MAXQUERYALLUSERINFO)
-			{
-				SendNetCmdToControl(&msg);
-				msg.count = 0;
-			}
-			msg.CenterRole[msg.count] = it->second->GetRoleInfo();
-			msg.count++;
+			m_CenterServerManager.SendNetCmdToAllGameServer(req);
 		}
-		msg.end = true;
-		SendNetCmdToControl(&msg);
-
+		else
+		{
+			HashMap<DWORD, CenterRole*>::const_iterator it = roles->begin();
+			for (; it != roles->end(); ++it)
+			{
+				if (msg.count == MAXQUERYALLUSERINFO)
+				{
+					SendNetCmdToControl(&msg);
+					msg.count = 0;
+				}
+				const tagCenterRoleInfo& role = it->second->GetRoleInfo();
+				bool add = false;
+				switch (cur_type)
+				{
+				case QueryUserType_ByNickName:
+					if (_tcscmp(role.NickName, req->NickName) == 0)
+					{
+						CenterRole* pRole = GetRoleManager().QueryCenterUser(role.dwUserID);
+						if (pRole)
+						{
+							pRole->SendDataToGameServer(req);
+							
+						}
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		return true;
 	}
 	break;
 	case CL_SendMsgToAllGame:

@@ -32,7 +32,7 @@ public:
 protected:
 	HICON m_hIcon;
 	std::map<DlgType, CDialogEx*> _dlgs;
-	
+	std::list<CString> _Notices;
 	
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
@@ -45,5 +45,6 @@ public:
 	DlgLogin* GetLogin();
 	DlgGMToolListPage* GetGMTool();
 	void LoginSucessful();
+	void Notice(CString notice);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

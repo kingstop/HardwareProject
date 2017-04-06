@@ -197,6 +197,7 @@
   <ItemGroup>
     <ClInclude Include="..\SourceCode\CommonFile\tinyxml\tinyxml2.h" />
     <ClInclude Include="..\SourceCode\CommonFile\tinyxml\XmlReader.h" />
+    <ClInclude Include="DlgFrozenUser.h" />
     <ClInclude Include="DlgGMToolListPage.h" />
     <ClInclude Include="DlgLogin.h" />
     <ClInclude Include="GMServerTool.h" />
@@ -209,6 +210,7 @@
   <ItemGroup>
     <ClCompile Include="..\SourceCode\CommonFile\tinyxml\tinyxml2.cpp" />
     <ClCompile Include="..\SourceCode\CommonFile\tinyxml\XmlReader.cpp" />
+    <ClCompile Include="DlgFrozenUser.cpp" />
     <ClCompile Include="DlgGMToolListPage.cpp" />
     <ClCompile Include="DlgLogin.cpp" />
     <ClCompile Include="GMServerTool.cpp" />

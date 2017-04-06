@@ -195,6 +195,7 @@ void CGMServerToolDlg::OnMove(int x, int y)
 	CRect rcClient;
 	GetClientRect(rcClient);
 	ClientToScreen(rcClient);
+	rcClient.top = rcClient.top + 40;
 	std::map<DlgType, CDialogEx*>::iterator it = _dlgs.begin();
 	for (; it != _dlgs.end(); ++ it)
 	{
@@ -212,4 +213,25 @@ void CGMServerToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 	CDialogEx::OnTimer(nIDEvent);
 	g_GMToolManager.Update();
+}
+
+
+void CGMServerToolDlg::Notice(CString notice)
+{
+	_Notices.push_front(notice);
+	if (_Notices.size() >= 15)
+	{
+		_Notices.pop_back();
+	}
+
+	CString curText = TEXT("");
+	std::list<CString>::iterator it = _Notices.begin();
+	for (; it != _Notices.end(); ++ it)
+	{
+		if (curText.IsEmpty() == false)
+		{
+			curText += TEXT("/r/n");
+		}		
+	}
+	SetDlgItemText(IDC_EDIT_NOTICE, curText);
 }

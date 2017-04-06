@@ -7788,9 +7788,17 @@ struct CE_GM_QueryUserACK : public NetCmd
 		SubCmdType = CE_GM_QUERY_USER_ACK;
 		CmdType = Main_Control;
 	}
-	tagCenterRoleInfo CenterRole[MAXQUERYALLUSERINFO];
+	tagRoleInfo Role[MAXQUERYALLUSERINFO];
 	BYTE count;
-	bool end;
+	bool end;	
+};
+
+enum QueryUserType
+{
+	QueryUserType_All,
+	QueryUserType_Online,
+	QueryUserType_Offline,
+	QueryUserType_ByNickName
 };
 
 struct GM_CL_QueryUserInfoReq : public NetCmd
@@ -7801,6 +7809,8 @@ struct GM_CL_QueryUserInfoReq : public NetCmd
 		CmdType = Main_Control;
 	}
 
+	TCHAR	NickName[MAX_NICKNAME + 1];
+	BYTE   Type;
 };
 
 struct GM_CL_Cmd_CheckPassWordReq : public NetCmd

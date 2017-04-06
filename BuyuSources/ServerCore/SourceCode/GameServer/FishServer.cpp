@@ -1781,6 +1781,59 @@ bool FishServer::HandleCenterMsg(NetCmd* pCmd)
 					return true;
 				}
 				break;
+			case GM_CL_QUERY_USER_INFO:
+				{
+					GM_CL_QueryUserInfoReq* pMsg = (GM_CL_QueryUserInfoReq*)pCmd;
+					CE_GM_QueryUserACK msg;
+					SetMsgInfo(msg, GetMsgType(Main_Control, CE_GM_QUERY_USER_ACK), sizeof(CE_GM_QueryUserACK));
+					QueryUserType cur_type = (QueryUserType)pMsg->Type;
+					HashMap<DWORD, CRoleEx*>& roles = GetRoleManager()->GetAllRole();
+					HashMap<DWORD, CRoleEx*>::iterator it = roles.begin();
+					msg.count = 0;
+					for (; it != roles.end(); ++ it)
+					{
+						bool find = false;
+						bool add = false;
+						CRoleEx* role = it->second;
+						const tagRoleInfo& RoleInfo = role->GetRoleInfo();
+						switch (cur_type)
+						{
+						case 	QueryUserType_All:
+						case 	QueryUserType_Online:
+						case 	QueryUserType_Offline:
+						{
+							add = true;
+
+						}
+						break;
+						case 	QueryUserType_ByNickName:
+						{
+							if (StrCmpW(pMsg->NickName, RoleInfo.NickName) == true)
+							{
+								add = true;
+							}
+							
+						}
+						break;
+						default:
+							break;
+						}
+
+						if (add)
+						{
+							msg.Role[msg.count] = RoleInfo;
+							msg.count++;
+							if (msg.count >= MAXQUERYALLUSERINFO)
+							{
+								SendNetCmdToControl(&msg);
+								msg.count = 0;
+							}
+						}
+					}
+					msg.end = true;
+					SendNetCmdToControl(&msg);
+				}
+			break;
 			case CL_QueryOnlineUserInfo:
 				{
 					CL_Cmd_QueryOnlineUserInfo* pMsg = (CL_Cmd_QueryOnlineUserInfo*)pCmd;

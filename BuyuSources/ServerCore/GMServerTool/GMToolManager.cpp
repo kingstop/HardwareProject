@@ -229,6 +229,17 @@ void GMToolManager::Update()
 }
 
 
+void GMToolManager::SendQueryUser(QueryUserType en, CString NickName)
+{
+	GM_CL_QueryUserInfoReq req;
+	req.Type = en;
+	StrCpyW(req.NickName, NickName);
+	SetMsgInfo(req, GetMsgType(Main_Control, GM_CL_QUERY_USER_INFO), sizeof(GM_CL_QueryUserInfoReq));
+	_RoleList.clear();
+	SendNetCmdToControl(&req);
+	
+}
+
 bool GMToolManager::HandleControlMsg(NetCmd* pCmd)
 {
 	
@@ -248,12 +259,12 @@ bool GMToolManager::HandleControlMsg(NetCmd* pCmd)
 		{
 			switch (pCmd->SubCmdType)
 			{
-			case CE_GM_QUERY_ALL_USER_ACK:
+			case CE_GM_QUERY_USER_ACK:
 			{
-				CE_GM_QueryAllUserACK* msg = (CE_GM_QueryAllUserACK*)pCmd;
+				CE_GM_QueryUserACK* msg = (CE_GM_QueryUserACK*)pCmd;
 				for (int i = 0; i < msg->count; i ++)
 				{
-					_RoleList[msg->CenterRole[i].dwUserID] = msg->CenterRole[i];
+					_RoleList[msg->Role[i].dwUserID] = msg->Role[i];
 				}
 				
 				if (msg->end)
@@ -261,6 +272,20 @@ bool GMToolManager::HandleControlMsg(NetCmd* pCmd)
 					g_dlg->GetGMTool()->RefrashRoleList();
 
 				}
+			}
+			break;
+			case LC_KickUserResult:
+			{
+				LC_Cmd_KickUserResult* pMsg = (LC_Cmd_KickUserResult*)pCmd;
+				if (pMsg->Result == 1)
+				{
+					Notice(TEXT("冻结玩家成功"));
+				}
+				else
+				{
+					Notice(TEXT("冻结玩家失败"));
+				}
+				
 			}
 			break;
 			default:
@@ -287,13 +312,22 @@ void GMToolManager::OnTcpClientLeave(TCPClient* pClient)
 	}
 }
 
+void GMToolManager::KickUser(DWORD UserID, int FrozenTime)
+{
+	CL_Cmd_KickUserByID msg;
+	msg.dwUserID = UserID;
+	msg.FreezeMin = FrozenTime;
+	SetMsgInfo(msg, GetMsgType(Main_Control, CL_KickUserByID), sizeof(CL_Cmd_KickUserByID));
+	SendNetCmdToControl(&msg);
+}
+
 void GMToolManager::SendLoginReq(const char* Account, const char* PassWord)
 {
 	GM_CL_Cmd_CheckPassWordReq msg;
 	SetMsgInfo(msg, GetMsgType(Main_Control, GM_CL_CHECK_PASSWORD_REQ), sizeof(GM_CL_Cmd_CheckPassWordReq));
 	sprintf_s(msg.Account, "%s", Account);
 	sprintf_s(msg.PassWord, "%s", PassWord);
-	_ControlTcp.Send(&msg, false);	
+	SendNetCmdToControl(&msg);
 }
 
 void GMToolManager::OnTcpClientConnect(TCPClient* pClient)
@@ -314,7 +348,12 @@ void GMToolManager::OnTcpClientConnect(TCPClient* pClient)
 	return;
 }
 
-const std::map<DWORD, tagCenterRoleInfo>* GMToolManager::GetRoleList()
+std::map<DWORD, tagRoleInfo>* GMToolManager::GetRoleList()
 {
 	return &_RoleList;
+}
+
+void GMToolManager::Notice(CString n)
+{
+	g_dlg->Notice(n);
 }
