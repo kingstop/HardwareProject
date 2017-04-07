@@ -15,14 +15,20 @@ public:
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_FROZEN_USER };
 #endif
+public:
+	void SetNickName(CString NickName);
+	void SetUserID(DWORD UserID);
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
 	virtual BOOL OnInitDialog();
-
+	
 protected:
 	DWORD _UserID;
-	int FrozenTime;
+	int _FrozenTime;
+	CString _NickName;
 
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedOk();
 };

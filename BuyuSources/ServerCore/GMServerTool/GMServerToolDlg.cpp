@@ -122,6 +122,7 @@ BOOL CGMServerToolDlg::OnInitDialog()
 
 void CGMServerToolDlg::LoginSucessful()
 {
+	
 	_dlgs[LoginDlg_Type]->ShowWindow(FALSE);
 	_dlgs[CmdPage_Type]->ShowWindow(TRUE);
 }
@@ -189,13 +190,10 @@ DlgGMToolListPage* CGMServerToolDlg::GetGMTool()
 void CGMServerToolDlg::OnMove(int x, int y)
 {
 	CDialogEx::OnMove(x, y);
-
-
-	
 	CRect rcClient;
 	GetClientRect(rcClient);
 	ClientToScreen(rcClient);
-	rcClient.top = rcClient.top + 40;
+	rcClient.left = rcClient.left + 210;
 	std::map<DlgType, CDialogEx*>::iterator it = _dlgs.begin();
 	for (; it != _dlgs.end(); ++ it)
 	{

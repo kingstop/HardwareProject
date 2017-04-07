@@ -34,8 +34,29 @@ BOOL DlgFrozenUser::OnInitDialog()
 	return TRUE;
 }
 
+
+
+void DlgFrozenUser::SetNickName(CString NickName)
+{
+	_NickName = NickName;
+}
+void DlgFrozenUser::SetUserID(DWORD UserID)
+{
+	_UserID = UserID;
+	SetDlgItemInt(IDC_EDIT_USER_ID, _UserID);
+}
 BEGIN_MESSAGE_MAP(DlgFrozenUser, CDialogEx)
+	ON_BN_CLICKED(IDOK, &DlgFrozenUser::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
 // DlgFrozenUser 消息处理程序
+
+
+void DlgFrozenUser::OnBnClickedOk()
+{
+	int FrozenTime = GetDlgItemInt(IDC_EDIT_FROZEN_TIME);
+	g_GMToolManager.KickUser(_UserID, FrozenTime);
+	// TODO: 在此添加控件通知处理程序代码
+	CDialogEx::OnOK();
+}

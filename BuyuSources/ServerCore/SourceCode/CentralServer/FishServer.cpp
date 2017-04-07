@@ -1288,12 +1288,34 @@ bool FishServer::HandleGameServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 				ASSERT(false);
 				return true;
 			}
+			
+			CenterRole* pRole = m_RoleManager.QueryCenterUser(pMsg->dwDestUserID);
+			if (pRole)
+			{
+			//玩家在线 直接发到玩家去
+				CG_Cmd_SendUserMail msg;
+				SetMsgInfo(msg, GetMsgType(Main_Mail, CG_SendUserMail), sizeof(CG_Cmd_SendUserMail));
+				msg.DestUserID = pMsg->dwDestUserID;
+				msg.MailInfo = pMsg->MailInfo;
+				pRole->SendDataToGameServer(&msg);
+			}
+			else
+			{
+			//玩家不在线 直接发送数据库命令
+				DBR_Cmd_AddUserMail msg;
+				SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
+				msg.dwDestUserID = pMsg->dwDestUserID;//当前玩家
+				msg.MailInfo = pMsg->MailInfo;
+				SendNetCmdToDB(&msg);
+			}
+			return true;
+			
 			//将命令发送到数据库去 系统邮件有 DBR进行执行
-			DBR_Cmd_AddUserMail msg;
-			SetMsgInfo(msg,DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
-			msg.dwDestUserID = pMsg->dwDestUserID;
-			msg.MailInfo = pMsg->MailInfo;
-			SendNetCmdToDB(&msg);
+			//DBR_Cmd_AddUserMail msg;
+			//SetMsgInfo(msg,DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
+			//msg.dwDestUserID = pMsg->dwDestUserID;
+			//msg.MailInfo = pMsg->MailInfo;
+			//SendNetCmdToDB(&msg);
 			return true;
 		}
 		}
@@ -2825,11 +2847,25 @@ bool FishServer::HandleControlMsg(NetCmd* pCmd)
 		TCHARCopy(MailInfo.SrcNickName, CountArray(MailInfo.SrcNickName), TEXT(""), 0);
 		MailInfo.SrcUserID = 0;//系统发送
 		MailInfo.bIsExistsReward = (MailInfo.RewardID != 0 && MailInfo.RewardSum != 0);
-		DBR_Cmd_AddUserMail msg;
-		SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
-		msg.dwDestUserID = pMsg->dwUserID;
-		msg.MailInfo = MailInfo;
-		g_FishServer.SendNetCmdToDB(&msg);
+		CenterRole* pRole = m_RoleManager.QueryCenterUser(pMsg->dwUserID);
+		if (pRole)
+		{
+			//玩家在线 直接发到玩家去
+			CG_Cmd_SendUserMail msg;
+			SetMsgInfo(msg, GetMsgType(Main_Mail, CG_SendUserMail), sizeof(CG_Cmd_SendUserMail));
+			msg.DestUserID = pMsg->dwUserID;
+			msg.MailInfo = MailInfo;
+			pRole->SendDataToGameServer(&msg);
+		}
+		else
+		{
+			DBR_Cmd_AddUserMail msg;
+			SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
+			msg.dwDestUserID = pMsg->dwUserID;
+			msg.MailInfo = MailInfo;
+			g_FishServer.SendNetCmdToDB(&msg);
+		}
+
 		return true;
 	}
 	break;

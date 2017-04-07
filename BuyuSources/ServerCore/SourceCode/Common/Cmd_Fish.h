@@ -7754,7 +7754,10 @@ enum ControlSub
 	GM_CL_CHECK_PASSWORD_REQ = 100,
 	CL_GM_CHECK_PASSWORD_ACK = 101,
 	GM_CL_QUERY_USER_INFO = 102,
-	CE_GM_QUERY_USER_ACK = 103
+	CE_GM_QUERY_USER_ACK = 103,
+
+	GM_CL_REWARD_CONFIGS_REQ = 104,
+	CL_GM_REWARD_CONFIGS_ACK = 105,
 
 };
 //牛牛,舞会,碰碰车通用
@@ -7780,6 +7783,27 @@ enum  CONTROL_COMMON_INNER//通用控制代码,,返回状态
 };
 
 ///GMYOOL
+#define MAX_REWARDS 100
+struct GM_Cl_RewardConfigReq : public NetCmd
+{
+
+};
+#define MAX_GM_ITEMS 30
+struct TAG_GM_Reward
+{
+	WORD		RewardID;
+	tagItemOnce item[MAX_GM_ITEMS] ;
+	int			ItemCount;
+};
+
+struct Cl_GM_RewardConfigACK : public NetCmd
+{
+	TAG_GM_Reward rewards[MAX_REWARDS];
+	BYTE count;
+	bool end;
+};
+
+
 #define MAXQUERYALLUSERINFO 40
 struct CE_GM_QueryUserACK : public NetCmd
 {
@@ -7856,7 +7880,7 @@ struct LC_Cmd_CheckClientInfo : public NetCmd
 //{
 //	DWORD		PlayerSum;
 //};
-
+#define MAXALLMSG 512
 struct CL_Cmd_SendMsgToAllGame : public NetCmd
 {
 	DWORD		Param;
@@ -7864,7 +7888,7 @@ struct CL_Cmd_SendMsgToAllGame : public NetCmd
 	BYTE		StepNum;
 	BYTE		StepSec;
 	WORD		MessageSize;
-	TCHAR		CenterMessage[1];
+	TCHAR		CenterMessage[512];
 };
 
 //struct CL_Cmd_ResetNoticeConfig : public NetCmd
@@ -7929,13 +7953,14 @@ struct CL_Cmd_FreezeAccount : public NetCmd
 	DWORD			dwUserID;
 	DWORD			FreezeMin;//冻结的秒数 
 };
+
 struct CL_Cmd_SendSystemEmail : public NetCmd
 {
 	DWORD		dwUserID;
 	DWORD		RewardID;
 	DWORD		RewardSum;
 	WORD		ContextSize;
-	TCHAR		EmailContext[1];
+	TCHAR		EmailContext[MAX_MAIL_CONTEXT + 1];
 };
 struct CL_Cmd_ChangeaNickName : public NetCmd
 {

@@ -35,6 +35,8 @@ BEGIN_MESSAGE_MAP(DlgGMToolListPage, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_FIND, &DlgGMToolListPage::OnBnClickedBtnFind)
 	ON_NOTIFY(NM_RCLICK, IDC_LIST2, &DlgGMToolListPage::OnNMRClickList2)
 	ON_COMMAND(ID_FROZEN_USER, &DlgGMToolListPage::OnFrozenUser)
+	
+	ON_COMMAND(ID_LIST_SEND_SYSTEM_MAIL, &DlgGMToolListPage::OnListSendSystemMail)
 END_MESSAGE_MAP()
 
 
@@ -143,6 +145,7 @@ void DlgGMToolListPage::RefrashRoleList()
 
 		tagRoleInfo& role = it->second;
 		m_ListCtrlRoles.InsertItem(i, role.NickName);
+		m_ListCtrlRoles.SetItemData(i, (DWORD_PTR)&role);
 		swprintf_s(sz, TEXT("%u"), role.dwUserID);
 		//sprintf_s(sz, "%u", role.dwUserID);
 		m_ListCtrlRoles.SetItemText(i, 0, (LPCTSTR)sz);
@@ -167,7 +170,6 @@ void DlgGMToolListPage::RefrashRoleList()
 
 		swprintf_s(sz, TEXT("%u"), role.GameID);
 		m_ListCtrlRoles.SetItemText(i, 6, (LPCTSTR)sz);
-		m_ListCtrlRoles.SetItemData(i, (DWORD_PTR)&role);
 
 		swprintf_s(sz, TEXT("%u"), role.dwGlobeNum);
 		m_ListCtrlRoles.SetItemText(i, 7, (LPCTSTR)sz);
@@ -297,8 +299,34 @@ void DlgGMToolListPage::OnNMRClickList2(NMHDR *pNMHDR, LRESULT *pResult)
 
 void DlgGMToolListPage::OnFrozenUser()
 {
-	tagCenterRoleInfo* info = (tagCenterRoleInfo*)m_ListCtrlRoles.GetItemData(_CurCtrlPop);
-	
-	
+	tagRoleInfo* info = (tagRoleInfo*)m_ListCtrlRoles.GetItemData(_CurCtrlPop);
+
+	DlgFrozenUser dlg;	
+	dlg.SetUserID(info->dwUserID);
+	CString nickname;
+	nickname.Format(info->NickName);
+	dlg.SetNickName(nickname);
+	if (dlg.DoModal() == IDOK)
+	{
+		//处理完毕后的操作
+	}		
+}
+
+
+
+void DlgGMToolListPage::OnListSendSystemMail()
+{
+
+	DlgSystemMail dlg;
+	tagRoleInfo* info = (tagRoleInfo*)m_ListCtrlRoles.GetItemData(_CurCtrlPop);
+	dlg.SetUserID(info->dwUserID);
+	CString nickname;
+	nickname.Format(info->NickName);
+	dlg.SetNickName(nickname);
+
+	if (dlg.DoModal() == IDOK)
+	{
+		//处理完毕后的操作
+	}
 	// TODO: 在此添加命令处理程序代码
 }

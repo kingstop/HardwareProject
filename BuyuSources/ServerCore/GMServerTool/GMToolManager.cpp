@@ -240,6 +240,14 @@ void GMToolManager::SendQueryUser(QueryUserType en, CString NickName)
 	
 }
 
+
+void GMToolManager::ReqLoadRewardConfig()
+{
+	GM_Cl_RewardConfigReq req;
+	SetMsgInfo(req, GetMsgType(Main_Control, GM_CL_REWARD_CONFIGS_REQ), sizeof(GM_Cl_RewardConfigReq));
+	SendNetCmdToControl(&req);
+}
+
 bool GMToolManager::HandleControlMsg(NetCmd* pCmd)
 {
 	
@@ -250,6 +258,7 @@ bool GMToolManager::HandleControlMsg(NetCmd* pCmd)
 			CL_GM_Cmd_CheckPassWordACK* msg = (CL_GM_Cmd_CheckPassWordACK*)pCmd;
 			if (msg->ret == true)
 			{
+				ReqLoadRewardConfig();
 				_login_successful = true;
 				g_dlg->LoginSucessful();
 			}
@@ -288,6 +297,24 @@ bool GMToolManager::HandleControlMsg(NetCmd* pCmd)
 				
 			}
 			break;
+			case CL_GM_REWARD_CONFIGS_ACK:
+			{
+				Cl_GM_RewardConfigACK* pMsg = (Cl_GM_RewardConfigACK*)pCmd;
+				for (size_t i = 0; i < pMsg->count; i++)
+				{
+					tagRewardOnce entry;
+					entry.RewardID = pMsg->rewards[i].RewardID;
+				
+					for (size_t j = 0; j < pMsg->rewards[i].ItemCount; j++)
+					{
+						entry.RewardItemVec.push_back(pMsg->rewards[i].item[j]);
+						
+					}					
+					_Rewards.insert(std::map<DWORD, tagRewardOnce>::value_type(entry.RewardID, entry));
+					
+				}
+			}
+			break;
 			default:
 				break;
 			}
@@ -318,6 +345,9 @@ void GMToolManager::KickUser(DWORD UserID, int FrozenTime)
 	msg.dwUserID = UserID;
 	msg.FreezeMin = FrozenTime;
 	SetMsgInfo(msg, GetMsgType(Main_Control, CL_KickUserByID), sizeof(CL_Cmd_KickUserByID));
+	WCHAR CHAR[512];
+	wsprintf(CHAR, TEXT("apply kick user[%lu] frozen time[%d]"), UserID, FrozenTime);
+	Notice(CHAR);
 	SendNetCmdToControl(&msg);
 }
 
@@ -328,6 +358,8 @@ void GMToolManager::SendLoginReq(const char* Account, const char* PassWord)
 	sprintf_s(msg.Account, "%s", Account);
 	sprintf_s(msg.PassWord, "%s", PassWord);
 	SendNetCmdToControl(&msg);
+
+	//LoadFishRewardConfig
 }
 
 void GMToolManager::OnTcpClientConnect(TCPClient* pClient)
@@ -353,7 +385,40 @@ std::map<DWORD, tagRoleInfo>* GMToolManager::GetRoleList()
 	return &_RoleList;
 }
 
+
+std::map<DWORD, tagRewardOnce>* GMToolManager::GetRewards()
+{
+	return &_Rewards;
+}
+
 void GMToolManager::Notice(CString n)
 {
 	g_dlg->Notice(n);
+}
+
+void GMToolManager::SendSystemMail(DWORD UserID, CString Context, int RewardID, int RewardSum)
+{
+	CL_Cmd_SendSystemEmail msg;
+	msg.dwUserID = UserID;
+	wsprintf(msg.EmailContext, Context);
+	msg.ContextSize = Context.GetLength() + 1;
+	msg.RewardID = RewardID;
+	msg.RewardSum = RewardSum;
+	SetMsgInfo(msg, GetMsgType(Main_Control, CL_SendSystemEmail), sizeof(CL_Cmd_SendSystemEmail));
+	SendNetCmdToControl(&msg);
+	Notice(TEXT("Send Mail ..."));
+}
+
+
+void GMToolManager::SendMsgToAllGame(CString Context, int Sum, int Sec, int param, DWORD color)
+{
+	CL_Cmd_SendMsgToAllGame msg;
+	swprintf_s(msg.CenterMessage, Context);
+	msg.StepNum = Sum;
+	msg.StepSec = Sec;
+	msg.Param = param;
+	msg.MessageSize = Context.GetLength() + 1;
+	msg.MessageColor = color;
+	SetMsgInfo(msg, GetMsgType(Main_Control, CL_SendMsgToAllGame), sizeof(CL_Cmd_SendMsgToAllGame));
+	SendNetCmdToControl(&msg);
 }

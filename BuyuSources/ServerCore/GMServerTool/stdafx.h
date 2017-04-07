@@ -58,6 +58,8 @@
 
 #include "DlgLogin.h"
 #include "DlgGMToolListPage.h"
+#include "DlgFrozenUser.h"
+#include "DlgSystemMail.h"
 
 extern GMToolManager g_GMToolManager;
 class CGMServerToolDlg;

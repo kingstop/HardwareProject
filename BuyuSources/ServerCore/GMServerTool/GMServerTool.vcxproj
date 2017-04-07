@@ -200,6 +200,8 @@
     <ClInclude Include="DlgFrozenUser.h" />
     <ClInclude Include="DlgGMToolListPage.h" />
     <ClInclude Include="DlgLogin.h" />
+    <ClInclude Include="DlgNotice.h" />
+    <ClInclude Include="DlgSystemMail.h" />
     <ClInclude Include="GMServerTool.h" />
     <ClInclude Include="GMServerToolDlg.h" />
     <ClInclude Include="GMToolManager.h" />
@@ -213,6 +215,8 @@
     <ClCompile Include="DlgFrozenUser.cpp" />
     <ClCompile Include="DlgGMToolListPage.cpp" />
     <ClCompile Include="DlgLogin.cpp" />
+    <ClCompile Include="DlgNotice.cpp" />
+    <ClCompile Include="DlgSystemMail.cpp" />
     <ClCompile Include="GMServerTool.cpp" />
     <ClCompile Include="GMServerToolDlg.cpp" />
     <ClCompile Include="GMToolManager.cpp" />

@@ -810,6 +810,43 @@ void FishServer::HandleGMToolMsg(ServerClientData* pClient, NetCmd* pCmd)
 		SendNetCmdToCenter(pMsg);
 	}
 	break;
+	case GM_CL_REWARD_CONFIGS_REQ:
+	{
+		tagRewardMap& rewardConfig = m_FishConfig.GetFishRewardConfig();
+		
+		HashMap<WORD, tagRewardOnce>::iterator it = rewardConfig.RewardMap.begin();
+		Cl_GM_RewardConfigACK msg;
+		SetMsgInfo(msg, GetMsgType(Main_Control, CL_GM_REWARD_CONFIGS_ACK), sizeof(Cl_GM_RewardConfigACK));
+
+		msg.count = 0;
+		msg.end = false;
+		for (; it != rewardConfig.RewardMap.end(); ++ it)
+		{
+			if (msg.count >= MAX_REWARDS)
+			{
+				SendNetCmdToClient(pClient, &msg);
+				msg.count = 0;
+			}
+			const tagRewardOnce& entry = it->second;
+			msg.rewards[msg.count].RewardID = entry.RewardID;
+
+			vector<tagItemOnce>::const_iterator it_item = entry.RewardItemVec.begin();
+			msg.rewards[msg.count].ItemCount = 0;
+			for (; it_item != it->second.RewardItemVec.end(); ++ it_item)
+			{
+				msg.rewards[msg.count].item[msg.rewards[msg.count].ItemCount] = (*it_item);
+				msg.rewards[msg.count].ItemCount++;
+				if (msg.rewards[msg.count].ItemCount >= MAX_GM_ITEMS)
+				{
+					break;
+				}
+			}
+			msg.count++;
+		}
+		msg.end = true;
+		SendNetCmdToClient(pClient, &msg);
+	}
+	break;
 		//case CL_CheckClientInfo:
 		//	{
 		//		CL_Cmd_CheckClientInfo* pMsg = (CL_Cmd_CheckClientInfo*)pCmd;

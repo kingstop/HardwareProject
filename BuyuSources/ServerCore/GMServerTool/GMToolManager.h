@@ -18,8 +18,13 @@ public:
 	void SendNetCmdToControl(NetCmd*pCmd);
 	void StringToChar(const CString s, char *Destination);
 	void Notice(CString n);
+	void SendSystemMail(DWORD UserID, CString Context, int RewardID, int RewardSum);
+	void SendMsgToAllGame(CString Context, int Sum, int Sec, int param, DWORD color);
 public:
 	std::map<DWORD, tagRoleInfo>* GetRoleList();
+	std::map<DWORD, tagRewardOnce>* GetRewards();
+protected:
+	void ReqLoadRewardConfig();
 	
 protected:
 	void OnTcpClientConnect(TCPClient* pClient);
@@ -31,6 +36,7 @@ public:
 	ControlServerConfig m_ControlServerConfig;
 	bool _login_successful;
 	std::map<DWORD, tagRoleInfo> _RoleList;
+	std::map<DWORD, tagRewardOnce> _Rewards;
 };
 
 
