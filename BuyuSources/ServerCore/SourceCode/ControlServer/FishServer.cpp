@@ -1070,235 +1070,115 @@ void FishServer::HandleServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 	break;
 	case LC_KickUserResult:
 	{
-							  LC_Cmd_KickUserResult* pMsg = (LC_Cmd_KickUserResult*)pCmd;
-							  HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-							  if (Iter == m_ControlClientList.end())
-							  {
-								  ASSERT(false);
-								  return;
-							  }
-							  SendNetCmdToClient(Iter->second, pMsg);
+							  //LC_Cmd_KickUserResult* pMsg = (LC_Cmd_KickUserResult*)pCmd;
+							  //HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
+							  //if (Iter == m_ControlClientList.end())
+							  //{
+								 // ASSERT(false);
+								 // return;
+							  //}
+
+		SendNtCmdToGMTool(pCmd);
+							  //SendNetCmdToClient(Iter->second, pMsg);
 							  break;
 	}
 	case LC_HandleEntityItem:
 	{
-								LC_Cmd_HandleEntityItem* pMsg = (LC_Cmd_HandleEntityItem*)pCmd;
-								HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-								if (Iter == m_ControlClientList.end())
-								{
-									ASSERT(false);
-									return;
-								}
-								SendNetCmdToClient(Iter->second, pMsg);
-								break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 
 	case LC_QueryOnlineUserInfo:
 	{
-								   LC_Cmd_QueryOnlineUserInfo * pMsg = (LC_Cmd_QueryOnlineUserInfo*)pCmd;
-								   HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-								   if (Iter == m_ControlClientList.end())
-								   {
-									   ASSERT(false);
-									   return;
-								   }
-								   SendNetCmdToClient(Iter->second, pMsg);
-								   break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 	case LC_ChangeParticularStates:
 	{
-									  LC_Cmd_ChangeParticularStates * pMsg = (LC_Cmd_ChangeParticularStates*)pCmd;
-									  HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-									  if (Iter == m_ControlClientList.end())
-									  {
-										  ASSERT(false);
-										  return;
-									  }
-									  SendNetCmdToClient(Iter->second, pMsg);
-									  return;
+		SendNtCmdToGMTool(pCmd);
 	}
 		break;
 
 	case LC_QueryFishPoolResult:
 	{
-								   LC_CMD_QueryFishPoolResult* pMsg = (LC_CMD_QueryFishPoolResult*)pCmd;
-								   HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-								   if (Iter == m_ControlClientList.end())
-								   {
-									   ASSERT(false);
-									   return;
-								   }
-								   SendNetCmdToClient(Iter->second, pMsg);
-								   break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 	case LC_QueryBlackListResult:
 	{
-									LC_CMD_QueryFishBlackListResult* pMsg = (LC_CMD_QueryFishBlackListResult*)pCmd;
-									HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-									if (Iter == m_ControlClientList.end())
-									{
-										ASSERT(false);
-										return;
-									}
-									SendNetCmdToClient(Iter->second, pMsg);
-									break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 	case LC_SetBlackListResult:
 	{
-								  LC_CMD_SetFishBlackListResult* pMsg = (LC_CMD_SetFishBlackListResult*)pCmd;
-								  HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-								  if (Iter == m_ControlClientList.end())
-								  {
-									  ASSERT(false);
-									  return;
-								  }
-								  SendNetCmdToClient(Iter->second, pMsg);
-								  break;
+		SendNtCmdToGMTool(pCmd);
+		 break;
 	}
 	case LC_OxAdmin:
 	{
-					   LC_CMD_OxAdminReq* pMsg = (LC_CMD_OxAdminReq*)pCmd;
-					   HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-					   if (Iter == m_ControlClientList.end())
-					   {
-						   ASSERT(false);
-						   return;
-					   }
-					   SendNetCmdToClient(Iter->second, pMsg);
-					   break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 	case LC_OxAdminQueryName:
 	{
-								LC_CMD_OxAdmin_PlayerNames* pMsg = (LC_CMD_OxAdmin_PlayerNames*)pCmd;
-								HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-								if (Iter == m_ControlClientList.end())
-								{
-									ASSERT(false);
-									return;
-								}
-								SendNetCmdToClient(Iter->second, pMsg);
-								break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 	case LC_OxAdminQueryAllJetton:
 	{
-									 LC_CMD_OxAdmin_AllJetton* pMsg = (LC_CMD_OxAdmin_AllJetton*)pCmd;
-									 HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-									 if (Iter == m_ControlClientList.end())
-									 {
-										 ASSERT(false);
-										 return;
-									 }
-									 SendNetCmdToClient(Iter->second, pMsg);
-									 break;
+		SendNtCmdToGMTool(pCmd);
+		 break;
 	}
 	case LC_OxAdminQueryPlayerJetton:
 	{
-										LC_CMD_OxAdmin_PlayerJetton* pMsg = (LC_CMD_OxAdmin_PlayerJetton*)pCmd;
-										HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-										if (Iter == m_ControlClientList.end())
-										{
-											ASSERT(false);
-											return;
-										}
-										SendNetCmdToClient(Iter->second, pMsg);
-										break;
+		SendNtCmdToGMTool(pCmd);
+										
+		break;
 	}
 	case LC_AnimalAdmin:
 	{
-						   LC_CMD_AnimalAdminReq* pMsg = (LC_CMD_AnimalAdminReq*)pCmd;
-						   HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-						   if (Iter == m_ControlClientList.end())
-						   {
-							   ASSERT(false);
-							   return;
-						   }
-						   SendNetCmdToClient(Iter->second, pMsg);
-						   break;
+		SendNtCmdToGMTool(pCmd);
+						  
+		break;
 	}
 	case LC_AnimalAdminQueryName:
 	{
-									LC_CMD_AnimalAdmin_PlayerNames* pMsg = (LC_CMD_AnimalAdmin_PlayerNames*)pCmd;
-									HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-									if (Iter == m_ControlClientList.end())
-									{
-										ASSERT(false);
-										return;
-									}
-									SendNetCmdToClient(Iter->second, pMsg);
-									break;
+		SendNtCmdToGMTool(pCmd);
+								
+		break;
 	}
 	case LC_AnimalAdminQueryAllJetton:
 	{
-										 LC_CMD_AnimalAdmin_AllJetton* pMsg = (LC_CMD_AnimalAdmin_AllJetton*)pCmd;
-										 HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-										 if (Iter == m_ControlClientList.end())
-										 {
-											 ASSERT(false);
-											 return;
-										 }
-										 SendNetCmdToClient(Iter->second, pMsg);
-										 break;
+		SendNtCmdToGMTool(pCmd);
+										
+		break;
 	}
 	case LC_AnimalAdminQueryPlayerJetton:
 	{
-											LC_CMD_AnimalAdmin_PlayerJetton* pMsg = (LC_CMD_AnimalAdmin_PlayerJetton*)pCmd;
-											HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-											if (Iter == m_ControlClientList.end())
-											{
-												ASSERT(false);
-												return;
-											}
-											SendNetCmdToClient(Iter->second, pMsg);
-											break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 
 	case LC_CarAdmin:
 	{
-						LC_CMD_CarAdminReq* pMsg = (LC_CMD_CarAdminReq*)pCmd;
-						HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-						if (Iter == m_ControlClientList.end())
-						{
-							ASSERT(false);
-							return;
-						}
-						SendNetCmdToClient(Iter->second, pMsg);
-						break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 	case LC_CarAdminQueryName:
 	{
-								 LC_CMD_CarAdmin_PlayerNames* pMsg = (LC_CMD_CarAdmin_PlayerNames*)pCmd;
-								 HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-								 if (Iter == m_ControlClientList.end())
-								 {
-									 ASSERT(false);
-									 return;
-								 }
-								 SendNetCmdToClient(Iter->second, pMsg);
-								 break;
+		SendNtCmdToGMTool(pCmd);
+		 break;
 	}
 	case LC_CarAdminQueryAllJetton:
 	{
-									  LC_CMD_CarAdmin_AllJetton* pMsg = (LC_CMD_CarAdmin_AllJetton*)pCmd;
-									  HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-									  if (Iter == m_ControlClientList.end())
-									  {
-										  ASSERT(false);
-										  return;
-									  }
-									  SendNetCmdToClient(Iter->second, pMsg);
-									  break;
+		SendNtCmdToGMTool(pCmd);
+		break;
 	}
 	case LC_CarAdminQueryPlayerJetton:
 	{
-										 LC_CMD_CarAdmin_PlayerJetton* pMsg = (LC_CMD_CarAdmin_PlayerJetton*)pCmd;
-										 HashMap<DWORD, ServerClientData* >::iterator Iter = m_ControlClientList.find(pMsg->ClientID);
-										 if (Iter == m_ControlClientList.end())
-										 {
-											 ASSERT(false);
-											 return;
-										 }
-										 SendNetCmdToClient(Iter->second, pMsg);
-										 break;
+		SendNtCmdToGMTool(pCmd);
+										 
+		break;
 	}
 	}
 	return;

@@ -31,6 +31,7 @@ BOOL DlgFrozenUser::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	SetDlgItemInt(IDC_EDIT_FROZEN_TIME, 0);
+	SetDlgItemInt(IDC_EDIT_USER_ID, _UserID);
 	return TRUE;
 }
 
@@ -42,8 +43,7 @@ void DlgFrozenUser::SetNickName(CString NickName)
 }
 void DlgFrozenUser::SetUserID(DWORD UserID)
 {
-	_UserID = UserID;
-	SetDlgItemInt(IDC_EDIT_USER_ID, _UserID);
+	_UserID = UserID;	
 }
 BEGIN_MESSAGE_MAP(DlgFrozenUser, CDialogEx)
 	ON_BN_CLICKED(IDOK, &DlgFrozenUser::OnBnClickedOk)

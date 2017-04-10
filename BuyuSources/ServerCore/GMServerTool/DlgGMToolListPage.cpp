@@ -37,6 +37,8 @@ BEGIN_MESSAGE_MAP(DlgGMToolListPage, CDialogEx)
 	ON_COMMAND(ID_FROZEN_USER, &DlgGMToolListPage::OnFrozenUser)
 	
 	ON_COMMAND(ID_LIST_SEND_SYSTEM_MAIL, &DlgGMToolListPage::OnListSendSystemMail)
+	ON_COMMAND(ID_LIST_NOTICE, &DlgGMToolListPage::OnListNotice)
+	ON_BN_CLICKED(IDC_BTN_SEND_MSG, &DlgGMToolListPage::OnBnClickedBtnSendMsg)
 END_MESSAGE_MAP()
 
 
@@ -329,4 +331,23 @@ void DlgGMToolListPage::OnListSendSystemMail()
 		//处理完毕后的操作
 	}
 	// TODO: 在此添加命令处理程序代码
+}
+
+
+void DlgGMToolListPage::OnListNotice()
+{
+	DlgNotice dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		//处理完毕后的操作
+	}
+
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void DlgGMToolListPage::OnBnClickedBtnSendMsg()
+{
+	OnListNotice();
+	// TODO: 在此添加控件通知处理程序代码
 }

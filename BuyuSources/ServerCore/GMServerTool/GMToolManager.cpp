@@ -18,7 +18,7 @@ void GMToolManager::StringToChar(const CString s, char *Destination)
 	int k = 0;
 	wchar_t *inf = NULL;
 	inf = new wchar_t[MAX_STRINGLENGTH];
-	wcscpy(inf, s);
+	wcscpy_s(inf, MAX_STRINGLENGTH, s);
 	k = WideCharToMultiByte(CP_ACP, 0, inf, -1, NULL, 0, NULL, 0);
 	k = WideCharToMultiByte(CP_ACP, 0, inf, k, Destination, k, NULL, 0);
 	if (inf != NULL)
@@ -420,5 +420,6 @@ void GMToolManager::SendMsgToAllGame(CString Context, int Sum, int Sec, int para
 	msg.MessageSize = Context.GetLength() + 1;
 	msg.MessageColor = color;
 	SetMsgInfo(msg, GetMsgType(Main_Control, CL_SendMsgToAllGame), sizeof(CL_Cmd_SendMsgToAllGame));
+	Notice(TEXT("Send msg to all game"));
 	SendNetCmdToControl(&msg);
 }

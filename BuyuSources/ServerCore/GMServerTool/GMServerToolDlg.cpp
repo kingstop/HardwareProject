@@ -229,7 +229,8 @@ void CGMServerToolDlg::Notice(CString notice)
 		if (curText.IsEmpty() == false)
 		{
 			curText += TEXT("/r/n");
-		}		
+		}	
+		curText += (*it);
 	}
 	SetDlgItemText(IDC_EDIT_NOTICE, curText);
 }
