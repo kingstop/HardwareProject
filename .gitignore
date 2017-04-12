@@ -241,3 +241,4 @@ pip-log.txt
 .tox
 BuyuSources/NewClient/Assets/Atlas
 BuyuSources/NewClient/Assets/NGUI
+BuyuSources/Packages
