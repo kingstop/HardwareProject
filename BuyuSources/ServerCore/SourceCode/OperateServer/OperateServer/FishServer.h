@@ -15,6 +15,7 @@
 #include "QQLogon.h"
 #include "WeiXinUserInfoManager.h"
 #include "QQUserInfoManager.h"
+#include "HttpNewServer.h"
 enum HttpType
 {
 	HT_Recharge = 1,//ÇëÇó×¢²á
@@ -154,7 +155,7 @@ private:
 	QQUserInfoManager					m_QQUserInfo;
 
 	//Http
-	HttpServer							m_HttpServer;
+	HttpNewServer							m_HttpServer;
 	HttpClient							m_HttpClient;
 
 	//HashMap

@@ -416,7 +416,9 @@ void HttpServer::_RecvThread()
 						SendResponse(pc, strTime, m_InitData.AddrList[rd.RequestIdx].Response);
 					}
 					else
-						SendResponse(pc, strTime, FAIL_TXT);
+					{
+						NormalCall(pc, strTime);
+					}						
 					pc->Removed = true;
 				}
 				else if (pc->RecvSize >= sizeof(pc->Buff))
@@ -430,6 +432,11 @@ void HttpServer::_RecvThread()
 		Sleep(m_InitData.SleepTime);
 	}
 	::InterlockedDecrement(&m_ExitNum);
+}
+
+void HttpServer::NormalCall(HttpClientData *pc, const char* Time)
+{
+	SendResponse(pc, Time, FAIL_TXT);
 }
 
 void HttpServer::_AcceptThread()
