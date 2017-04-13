@@ -109,7 +109,7 @@ void HttpNewServer::DomePay(const char* data, HttpClientData* c)
 	std::string responseCode = map_argu["responseCode"];
 	std::string errorCode = map_argu["errorCode"];
 	std::string errorMsg = map_argu["errorMsg"];
-	std::string data = map_argu["data"];
+	std::string data_temp = map_argu["data"];
 	std::string signCode = map_argu["signCode"];
 }
 void HttpNewServer::DomeTestPay(const char* data, HttpClientData* c)
@@ -119,7 +119,7 @@ void HttpNewServer::DomeTestPay(const char* data, HttpClientData* c)
 	std::string responseCode = map_argu["responseCode"];
 	std::string errorCode = map_argu["errorCode"];
 	std::string errorMsg = map_argu["errorMsg"];
-	std::string data = map_argu["data"];
+	std::string data_temp = map_argu["data"];
 	std::string signCode = map_argu["signCode"];
 }
 void HttpNewServer::DomeTestLogin(const char* data, HttpClientData* c)

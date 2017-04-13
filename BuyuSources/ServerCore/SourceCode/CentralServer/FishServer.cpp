@@ -1236,6 +1236,12 @@ bool FishServer::HandleGameServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 				ASSERT(false);
 				return true;
 			}
+			DBR_Cmd_AddUserMail msg;
+			SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
+			msg.dwDestUserID = pMsg->DestUserID;//当前玩家
+			msg.MailInfo = pMsg->MailInfo;
+			SendNetCmdToDB(&msg);
+			/*
 			CenterRole* pRole = m_RoleManager.QueryCenterUser(pMsg->DestUserID);
 			if (pRole)
 			{
@@ -1249,12 +1255,9 @@ bool FishServer::HandleGameServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 			else
 			{
 				//玩家不在线 直接发送数据库命令
-				DBR_Cmd_AddUserMail msg;
-				SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
-				msg.dwDestUserID = pMsg->DestUserID;//当前玩家
-				msg.MailInfo = pMsg->MailInfo;
-				SendNetCmdToDB(&msg);
+
 			}
+			*/
 			return true;
 		}
 		case GC_SendUserMailResult:
@@ -1288,7 +1291,13 @@ bool FishServer::HandleGameServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 				ASSERT(false);
 				return true;
 			}
-			
+
+			DBR_Cmd_AddUserMail msg;
+			SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
+			msg.dwDestUserID = pMsg->dwDestUserID;//当前玩家
+			msg.MailInfo = pMsg->MailInfo;
+			SendNetCmdToDB(&msg);
+			/*
 			CenterRole* pRole = m_RoleManager.QueryCenterUser(pMsg->dwDestUserID);
 			if (pRole)
 			{
@@ -1302,12 +1311,9 @@ bool FishServer::HandleGameServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 			else
 			{
 			//玩家不在线 直接发送数据库命令
-				DBR_Cmd_AddUserMail msg;
-				SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
-				msg.dwDestUserID = pMsg->dwDestUserID;//当前玩家
-				msg.MailInfo = pMsg->MailInfo;
-				SendNetCmdToDB(&msg);
+
 			}
+			*/
 			return true;
 			
 			//将命令发送到数据库去 系统邮件有 DBR进行执行
@@ -2847,6 +2853,7 @@ bool FishServer::HandleControlMsg(NetCmd* pCmd)
 		TCHARCopy(MailInfo.SrcNickName, CountArray(MailInfo.SrcNickName), TEXT(""), 0);
 		MailInfo.SrcUserID = 0;//系统发送
 		MailInfo.bIsExistsReward = (MailInfo.RewardID != 0 && MailInfo.RewardSum != 0);
+		/*
 		CenterRole* pRole = m_RoleManager.QueryCenterUser(pMsg->dwUserID);
 		if (pRole)
 		{
@@ -2865,6 +2872,12 @@ bool FishServer::HandleControlMsg(NetCmd* pCmd)
 			msg.MailInfo = MailInfo;
 			g_FishServer.SendNetCmdToDB(&msg);
 		}
+		*/
+		DBR_Cmd_AddUserMail msg;
+		SetMsgInfo(msg, DBR_AddUserMail, sizeof(DBR_Cmd_AddUserMail));
+		msg.dwDestUserID = pMsg->dwUserID;
+		msg.MailInfo = MailInfo;
+		g_FishServer.SendNetCmdToDB(&msg);
 
 		return true;
 	}
