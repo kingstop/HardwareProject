@@ -922,6 +922,14 @@ bool FishServer::HandleDataBaseMsg(BYTE Index, BYTE ClientID, NetCmd* pCmd)
 		//邮箱
 	case DBR_SaveRoleEmail:
 		return OnHandleChangeRoleEmail(Index, ClientID, pCmd);
+
+	case DBR_LOAD_OPERATOR_SYSTEM_MAIL:
+		return OnHandleLoadAllSystemMail(Index, ClientID, pCmd);
+
+	case DBR_SAVE_ROLE_SYSTEM_MAIL_RECORD:
+		return OnHandleSystemMailRecordStateModify(Index, ClientID, pCmd);
+	case DBR_ADD_OPERATOR_SYSTEM_MAIL:
+		return OnHandleAddOperatorSystemMail(Index, ClientID, pCmd);
 		//Center
 	case DBR_ClearFishDB:
 		return OnHandleClearFishDB(Index, ClientID, pCmd);
@@ -1764,6 +1772,71 @@ bool FishServer::OnHandleGetNewAccount(BYTE Index, BYTE ClientID, NetCmd* pCmd)
 	OnAddDBResult(Index, ClientID, msg);
 	return true;
 }
+
+int SplitStringA(const std::string& strIn, const std::string& strDelimiter, std::vector<std::string>& ret)
+{
+	ret.clear();
+
+	int iPos = 0;
+	int newPos = -1;
+	int delimiterLength = strDelimiter.size();
+	int strInLength = strIn.size();
+
+	if (delimiterLength == 0 || strInLength == 0)
+		return 0;
+
+	std::vector<int> positions;
+
+	newPos = strIn.find(strDelimiter, 0);
+
+	if (newPos < 0)
+	{
+		ret.push_back(strIn);
+		return 1;
+	}
+
+	int numFound = 0;
+
+	while (newPos >= iPos)
+	{
+		numFound++;
+		positions.push_back(newPos);
+		iPos = newPos;
+		newPos = strIn.find(strDelimiter, iPos + delimiterLength);
+	}
+
+	for (size_t i = 0; i <= positions.size(); ++i)
+	{
+		std::string s("");
+		if (i == 0)
+		{
+			s = strIn.substr(i, positions[i]);
+		}
+		else
+		{
+			int offset = positions[i - 1] + delimiterLength;
+			if (offset < strInLength)
+			{
+				if (i == positions.size())
+				{
+					s = strIn.substr(offset);
+				}
+				else
+				{
+					s = strIn.substr(offset, positions[i] - positions[i - 1] - delimiterLength);
+				}
+			}
+		}
+
+		if (s.size() > 0)
+		{
+			ret.push_back(s);
+		}
+	}
+	return numFound;
+}
+
+
 bool FishServer::OnHandleGetRoleInfoByUserID(BYTE Index, BYTE ClientID, NetCmd* pCmd)
 {
 	//获取玩家具体的数据 根据玩家的ID
@@ -1876,6 +1949,32 @@ bool FishServer::OnHandleGetRoleInfoByUserID(BYTE Index, BYTE ClientID, NetCmd* 
 
 		msg->RoleInfo.bShareStates = pTable1.GetBit(0, 52);
 		msg->RoleInfo.TotalCashSum = pTable1.GetUint(0, 53);
+		for (size_t j = 0; j < MAX_SYSTEM_RECORD_COUT; j++)
+		{
+			msg->RoleInfo.SystemMailRecord[j].MailID = 0;
+			msg->RoleInfo.SystemMailRecord[j].EndTime = 0;
+		}
+		
+		UINT Count = 0;
+		char* record_temp = WCharToChar(pTable1.GetStr(0, 54), Count);
+		
+		std::string system_record_str = record_temp;
+		free(record_temp);
+		std::vector<std::string> Out;
+		std::vector<std::string> Out1;
+		SplitStringA(system_record_str, ";", Out);
+		size_t length = Out.size();
+		for (size_t i = 0; i < length; i++)
+		{
+			SplitStringA(Out[i], ",", Out1);
+			if (Out1.size() == 2)
+			{
+				msg->RoleInfo.SystemMailRecord[i].MailID = atoi(Out1[0].c_str());
+				msg->RoleInfo.SystemMailRecord[i].EndTime = atoi(Out1[1].c_str());
+			}
+		}
+		Out.clear();
+		Out1.clear();
 
 		//msg->RoleInfo.LockStates = pTable1.GetUint(0,47);
 		//msg->RoleInfo.LockEndTime = pTable1.GetDateTime(0, 48);
@@ -3209,6 +3308,10 @@ bool FishServer::OnHandleDelUserRelation(BYTE Index, BYTE ClientID, NetCmd* pCmd
 //		ASSERT(false);
 //	return true;
 //}
+
+
+
+
 bool FishServer::OnHandleGetUserMail(BYTE Index, BYTE ClientID, NetCmd* pCmd)
 {
 	//获取玩家全部的邮件
@@ -3279,6 +3382,133 @@ bool FishServer::OnHandleGetUserMail(BYTE Index, BYTE ClientID, NetCmd* pCmd)
 	}
 	return true;
 }
+
+
+void convert_unix_time(unsigned int t, int* outyear, int* outmonth, int* outday, int* outhour, int* outminute, int* outsecond)
+{
+	time_t _t = t;
+	tm* p = localtime(&_t);
+	*outyear = p->tm_year + 1900;
+	*outmonth = p->tm_mon + 1;
+	*outday = p->tm_mday;
+	*outhour = p->tm_hour;
+	*outminute = p->tm_min;
+	*outsecond = p->tm_sec;
+}
+
+void build_unix_time_to_string(unsigned int t, std::string& out)
+{
+	char tmp[64];
+	int y, m, d, h, min, s;
+	convert_unix_time(t, &y, &m, &d, &h, &min, &s);
+	sprintf(tmp, "%d-%d-%d %d:%d:%d", y, m, d, h, min, s);
+	out = tmp;
+}
+
+
+bool FishServer::OnHandleSystemMailRecordStateModify(BYTE Index, BYTE ClientID, NetCmd* pCmd)
+{
+	char SqlStr[MAXSQL_LENGTH] = { 0 };
+	DBR_Cmd_SaveSystemMailRecord* pMsg = (DBR_Cmd_SaveSystemMailRecord*)pCmd;
+	time_t cur_time = time(NULL);
+	char sz_temp[512];
+	std::string record_state;
+	for (size_t i = 0; i < MAX_SYSTEM_RECORD_COUT; i++)
+	{
+		const tagSystemMailRecord& MailRecord = pMsg->MailRecord[i];
+		if (MailRecord.MailID != 0 && MailRecord.EndTime > cur_time)
+		{
+			if (record_state.empty() == false)
+			{
+
+			}
+			else
+			{
+				record_state += ";";
+			}
+			sprintf_s(sz_temp, "%d, %lu", MailRecord.MailID, MailRecord.EndTime);
+			record_state += sz_temp;
+		}
+	}
+	
+
+	sprintf_s(SqlStr, sizeof(SqlStr), "call FishSaveSystemMailState('%u','%s');", pMsg->UserID, record_state.c_str());
+	SqlTable pTable1;
+	
+	if (m_Sql[Index].Select(SqlStr, 0, pTable1, true) && pTable1.Rows() == 1)
+	{
+		if (pTable1.GetUint(0, 0) == 0)
+		{
+
+		}
+		else
+		{
+			
+		}
+	}
+	else
+	{
+		LogInfoToFile(DBErrorSqlFileName, SqlStr);
+		ASSERT(false);
+	}
+	
+	return true;
+}
+
+
+bool FishServer::OnHandleAddOperatorSystemMail(BYTE Index, BYTE ClientID, NetCmd* pCmd)
+{
+	GM_AddOperatorSystemMail* pMsg = (GM_AddOperatorSystemMail*)pCmd;
+	char SqlStr[MAXSQL_LENGTH] = { 0 };
+	UINT Size = 0;
+	char* Context = WCharToChar(pMsg->mail.Context, Size);
+	char* DestContext = (char*)malloc((Size * 2 + 1) * sizeof(char));
+	if (!DestContext)
+	{
+		free(DestContext);
+		free(Context);
+		return false;
+	}
+	else
+	{
+		ZeroMemory(DestContext, (Size * 2 + 1) * sizeof(char));
+		m_Sql[Index].GetMySqlEscapeString(Context, Size, DestContext);
+		char sz_cur_time[512];
+		SYSTEMTIME pTime;
+		GetLocalTime(&pTime);
+		std::string strBeginTime;
+		std::string strEndTime;
+		build_unix_time_to_string(pMsg->mail.BeginTime, strBeginTime);
+		build_unix_time_to_string(pMsg->mail.EndTime, strEndTime);
+
+		sprintf_s(sz_cur_time, sizeof(sz_cur_time), "%d-%d-%d %d:%d:%d", pTime.wYear, pTime.wMonth, pTime.wDay, pTime.wHour, pTime.wMinute, pTime.wSecond);
+
+		sprintf_s(SqlStr, sizeof(SqlStr), "call FishAddOperatorSystemMail('%s','%u','%u','%s', '%s', '%s');", DestContext,
+			pMsg->mail.RewardID, pMsg->mail.RewardSum, sz_cur_time, strBeginTime.c_str(), strEndTime.c_str());
+		free(DestContext);
+		free(Context);
+		SqlTable pTable1;
+		GM_AddOperatorSystemMail* msg = (GM_AddOperatorSystemMail*)CreateCmd(DBO_ADD_OPERATOR_SYSTEM_MAIL, sizeof(GM_AddOperatorSystemMail));
+		if (m_Sql[Index].Select(SqlStr, 0, pTable1, true) && pTable1.Rows() == 1)
+		{
+			if (pTable1.GetUint(0, 0) == 0)
+			{
+				
+			}
+			else
+			{								
+				msg->mail.ID = pTable1.GetUint(0, 0);				
+			}
+		}
+		else
+		{
+			LogInfoToFile(DBErrorSqlFileName, SqlStr);
+			ASSERT(false);
+		}
+		OnAddDBResult(Index, ClientID, msg);
+	}
+}
+
 bool FishServer::OnHandleAddUserMail(BYTE Index, BYTE ClientID, NetCmd* pCmd)
 {
 	//给指定玩家 添加一封邮件
@@ -5983,6 +6213,39 @@ bool FishServer::OnHandleAddAnnouncementInfo(BYTE Index, BYTE ClientID, NetCmd* 
 		ASSERT(false);
 	}
 	return true;
+}
+
+bool FishServer::OnHandleLoadAllSystemMail(BYTE Index, BYTE ClientID, NetCmd* pCmd)
+{
+	
+	DBO_Cmd_LoadAllSystemMail* msg = (DBO_Cmd_LoadAllSystemMail*)CreateCmd(DBO_LOAD_OPERATOR_SYSTEM_MAIL, sizeof(DBO_Cmd_LoadAllSystemMail));
+	SqlTable pTable1;
+	char SqlStr[MAXSQL_LENGTH] = { 0 };
+	sprintf_s(SqlStr, sizeof(SqlStr), "call FishLoadOperatorSystemMail('%u');", MAX_SYSTEM_MAIL_COUNT);
+	msg->Sum = 0;
+	if (m_Sql[Index].Select(SqlStr, 1, pTable1, true))
+	{
+		DWORD Rows = pTable1.Rows();
+		msg->Sum = Rows;
+		for (DWORD i = 0; i < Rows; ++i)
+		{
+			msg->mail[i].ID = pTable1.GetUint(i, 0);
+			TCHARCopy(msg->mail[i].Context, CountArray(msg->mail[i].Context), pTable1.GetStr(i, 1), _tcslen(pTable1.GetStr(i, 1)));
+			msg->mail[i].RewardID = pTable1.GetUint(i, 2);
+			msg->mail[i].RewardSum = pTable1.GetUint(i, 3);
+			//4 send time
+			msg->mail[i].BeginTime = pTable1.GetUint(i, 5);
+			msg->mail[i].EndTime = pTable1.GetUint(i, 6);
+			//msg. pTable1.GetStr(i, 0);
+			//TCHARCopy(msgBe->Array[i].NickName, CountArray(msgBe->Array[i].NickName), pTable1.GetStr(i, 0), _tcslen(pTable1.GetStr(i, 0)));
+			//msgBe->Array[i].ShopID = pTable1.GetByte(i, 1);
+			//msgBe->Array[i].ShopOnlyID = pTable1.GetByte(i, 2);
+		}
+
+	}
+	OnAddDBResult(Index, ClientID, msg);
+	return true;
+
 }
 bool FishServer::OnHandleChangeRoleEmail(BYTE Index, BYTE ClientID, NetCmd* pCmd)
 {

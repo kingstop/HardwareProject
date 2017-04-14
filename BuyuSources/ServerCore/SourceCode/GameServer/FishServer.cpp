@@ -1594,7 +1594,10 @@ bool FishServer::HandleCenterMsg(NetCmd* pCmd)
 		return true;
 	case Main_RelationRequest:
 		OnHandleSocketRelationRequest(pCmd);
+
 		return true;
+
+		
 	case Main_Achievement:
 		{
 			switch (pCmd->SubCmdType)
@@ -1765,6 +1768,28 @@ bool FishServer::HandleCenterMsg(NetCmd* pCmd)
 			ASSERT(false);
 			return false;
 		}
+	case Main_OperatorSystemMail:
+		{
+			switch (pCmd->SubCmdType)
+			{
+			case CG_AddOperatorSystemMail:
+			{
+				CG_Cmd_AddNewOperatorMail* pMsg = (CG_Cmd_AddNewOperatorMail*)pCmd;
+				_SystemMailManager.AddNewMail(pMsg->mail);
+			}
+			break;
+			case CG_GetAllSystemMail:
+			{
+				CG_Cmd_GetAllOperatorSystemMail* pMsg = (CG_Cmd_GetAllOperatorSystemMail*)pCmd;
+				_SystemMailManager.OnLoadAllOperatorSystemMailByCentral(pMsg);
+			}
+			break;
+			default:
+				break;
+			}
+			return true;
+		}
+		break;
 	case Main_Control:
 		{
 			switch (pCmd->SubCmdType)

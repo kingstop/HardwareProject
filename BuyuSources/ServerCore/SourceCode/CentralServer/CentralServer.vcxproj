@@ -124,6 +124,7 @@
     <ClCompile Include="FishMonthManager.cpp" />
     <ClCompile Include="FishNoticeManager.cpp" />
     <ClCompile Include="FishServer.cpp" />
+    <ClCompile Include="OperatorSystemMailManager.cpp" />
     <ClCompile Include="RoleManager.cpp" />
     <ClCompile Include="RoleRelationManager.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -144,6 +145,7 @@
     <ClInclude Include="FishMonthManager.h" />
     <ClInclude Include="FishNoticeManager.h" />
     <ClInclude Include="FishServer.h" />
+    <ClInclude Include="OperatorSystemMailManager.h" />
     <ClInclude Include="RoleManager.h" />
     <ClInclude Include="RoleRelationManager.h" />
     <ClInclude Include="stdafx.h" />

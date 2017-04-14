@@ -141,6 +141,8 @@ private:
 	bool OnHandleDelUserMail(BYTE Index, BYTE ClientID, NetCmd* pCmd);
 	bool OnHandleGetUserMailItem(BYTE Index, BYTE ClientID, NetCmd* pCmd);
 	bool OnHandleChangeUserMailIsRead(BYTE Index, BYTE ClientID, NetCmd* pCmd);
+	bool OnHandleAddOperatorSystemMail(BYTE Index, BYTE ClientID, NetCmd* pCmd);
+	bool OnHandleSystemMailRecordStateModify(BYTE Index, BYTE ClientID, NetCmd* pCmd);
 	//6.≤È—Ø
 	bool OnHandleQueryRoleInfoByNickName(BYTE Index, BYTE ClientID, NetCmd* pCmd);
 	bool OnHandleQueryRoleInfoByUserID(BYTE Index, BYTE ClientID, NetCmd* pCmd);
@@ -218,8 +220,10 @@ private:
 	//Announcement
 	bool OnHandleLoadAllAnnouncementInfo(BYTE Index, BYTE ClientID, NetCmd* pCmd);
 	bool OnHandleAddAnnouncementInfo(BYTE Index, BYTE ClientID, NetCmd* pCmd);
+	
 	//” œ‰
 	bool OnHandleChangeRoleEmail(BYTE Index, BYTE ClientID, NetCmd* pCmd);
+	bool OnHandleLoadAllSystemMail(BYTE Index, BYTE ClientID, NetCmd* pCmd);
 	//Center
 	bool OnHandleClearFishDB(BYTE Index, BYTE ClientID, NetCmd* pCmd);
 	//ExChange

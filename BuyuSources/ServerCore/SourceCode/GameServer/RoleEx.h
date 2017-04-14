@@ -153,7 +153,7 @@ public:
 	void UpdateByMin(bool IsHourChange, bool IsDayChange, bool IsMonthChange, bool IsYearChange);
 
 	void OnHandleEvent(bool IsUpdateTask, bool IsUpdateAction, bool IsUpdateAchievement,BYTE EventID, DWORD BindParam, DWORD Param);
-
+	void CheckSystemOperatorMail();
 
 	void OnAddRoleRewardByRewardID(WORD RewardID, const TCHAR* pStr,DWORD RewardSum = 1);//玩家获得指定的奖励ID
 

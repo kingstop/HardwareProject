@@ -732,6 +732,12 @@ void FishServer::SendNetCmdToDB(NetCmd* pCmd)
 		ASSERT(false);
 	}
 }
+
+
+void FishServer::SendNetCmdToAllGameServer(NetCmd* pCmd)
+{
+	m_CenterServerManager.SendNetCmdToAllGameServer(pCmd);
+}
 void FishServer::SendNetCmdToLogDB(NetCmd* pCmd)
 {
 	if (!pCmd)
@@ -2609,6 +2615,15 @@ bool FishServer::HandleDataBaseMsg(NetCmd* pCmd)
 			return true;
 		}
 		break;
+	case DBO_ADD_OPERATOR_SYSTEM_MAIL:
+		{
+			GM_AddOperatorSystemMail* pMsg = (GM_AddOperatorSystemMail*)pCmd;
+			if (pMsg->mail.ID != 0)
+			{
+
+			}
+		}
+		break;
 	case DBO_RoleEntityItem:
 		{
 			DBO_Cmd_RoleEntityItem* pMsg = (DBO_Cmd_RoleEntityItem*)pCmd;
@@ -2774,6 +2789,13 @@ bool FishServer::HandleControlMsg(NetCmd* pCmd)
 	}
 	switch (pCmd->SubCmdType)
 	{
+	case GM_ADD_NEW_OPERATOR_MAIL:
+	{
+		GM_AddOperatorSystemMail msg = *(GM_AddOperatorSystemMail*)pCmd;
+		SetMsgInfo(msg, DBR_ADD_OPERATOR_SYSTEM_MAIL, sizeof(GM_AddOperatorSystemMail));
+		g_FishServer.SendNetCmdToDB(&msg);
+	}
+	break;
 	case GM_CL_QUERY_USER_INFO:
 	{
 		GM_CL_QueryUserInfoReq * req = (GM_CL_QueryUserInfoReq *)pCmd;

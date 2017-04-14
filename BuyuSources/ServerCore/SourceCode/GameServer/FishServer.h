@@ -16,6 +16,7 @@
 //#include "RobotManager.h"
 #include "RoleQueueManager.h"
 #include "ExChangeManager.h"
+#include "SystemMailManager.h"
 #include "LotteryManager.h"
 #include "GameRobot.h"
 struct DelClient
@@ -70,6 +71,7 @@ public:
 	AnnouncementManager& GetAnnouncementManager(){ return m_AnnouncementManager; }
 	GameRobotManager& GetRobotManager(){ return m_RobotManager; }
 	RoleCache& GetRoleCache(){ return m_RoleCache; }
+	SystemMailManager                       GetSystemMailManager() { return _SystemMailManager; }
 
 	void UpdateByMin(DWORD dwTimer);
 	void OnSaveInfoToDB(DWORD dwTimer);
@@ -368,6 +370,7 @@ private:
 	RoleLogonManager						m_RoleLogonManager;
 
 	AnnouncementManager						m_AnnouncementManager;
+	SystemMailManager                       _SystemMailManager;
 
 	vector<DelClient>						m_DelSocketVec;
 

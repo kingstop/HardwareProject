@@ -445,6 +445,14 @@ struct tagRoleServerInfo
 	DWORD			SecPasswordCrc2;
 	DWORD			SecPasswordCrc3;
 };
+
+struct tagSystemMailRecord
+{
+	int MailID;
+	DWORD EndTime;
+};
+
+#define MAX_SYSTEM_RECORD_COUT 100
 struct tagRoleInfo
 {
 	DWORD			dwUserID;
@@ -521,6 +529,7 @@ struct tagRoleInfo
 	bool			bShareStates;
 	//兑换次数
 	DWORD			TotalCashSum;//总兑换次数
+	tagSystemMailRecord SystemMailRecord[MAX_SYSTEM_RECORD_COUT];
 };
 //玩家现实地址
 struct tagRoleAddressInfo
@@ -573,6 +582,8 @@ struct tagCenterRoleInfo
 	DWORD			ParticularStates;
 	DWORD			GameID;
 };
+
+
 struct tagQueryRoleInfo
 {
 	DWORD			dwUserID;
@@ -749,6 +760,10 @@ struct tagRoleMail   //从数据库读取出来的邮件信息
 	bool		bIsRead;//是否已经阅读
 	bool		bIsExistsReward;//是否存在奖励
 };
+
+
+
+
 struct tagNormalMailTitle
 {
 	DWORD		MailID;
@@ -785,6 +800,19 @@ struct tagSystemMail
 	bool		bIsRead;//是否已经阅读
 	bool		bIsExistsReward;//是否存在奖励
 };
+
+
+struct tagOperatorSystemMail
+{
+	TCHAR		Context[MAX_MAIL_CONTEXT + 1];//邮件内容
+	WORD		RewardID;
+	DWORD		RewardSum;//奖励的数量
+	
+	DWORD	BeginTime;
+	DWORD   EndTime;
+	DWORD   ID;
+};
+
 //签到
 //struct tagRoleCheckInfo
 //{
@@ -2644,6 +2672,15 @@ enum FishDBCmd
 	DBO_AddRelationRequest = DBR_RelationRequest_Init + 2,
 
 	DBR_DelRelationRequest = DBR_RelationRequest_Init + 3,
+
+	DBR_OPERATOR_SYSTEM_MAIL_INIT,
+    DBR_ADD_OPERATOR_SYSTEM_MAIL = DBR_OPERATOR_SYSTEM_MAIL_INIT + 1,
+	DBO_ADD_OPERATOR_SYSTEM_MAIL = DBR_OPERATOR_SYSTEM_MAIL_INIT + 2,
+	DBR_SAVE_ROLE_SYSTEM_MAIL_RECORD = DBR_OPERATOR_SYSTEM_MAIL_INIT + 3,
+	DBR_LOAD_OPERATOR_SYSTEM_MAIL = DBR_OPERATOR_SYSTEM_MAIL_INIT + 4,
+	DBO_LOAD_OPERATOR_SYSTEM_MAIL = DBR_OPERATOR_SYSTEM_MAIL_INIT + 5,
+
+
 };
 
 struct DBR_Cmd_AccountLogon : public NetCmd
@@ -2956,6 +2993,12 @@ struct DBR_Cmd_AddUserMail : public NetCmd
 {
 	DWORD			dwDestUserID;//目标玩家的ID
 	tagRoleMail		MailInfo;//待添加的邮件
+};
+
+struct DBR_Cmd_SaveSystemMailRecord : public NetCmd
+{
+	DWORD				UserID;
+	tagSystemMailRecord MailRecord[MAX_SYSTEM_RECORD_COUT];
 };
 struct DBO_Cmd_AddUserMail : public NetCmd
 {
@@ -3887,6 +3930,19 @@ struct DBR_Cmd_LogCarInfo :public NetCmd
 	DWORD RoleSum;
 };
 
+struct DBR_Cmd_LoadAllSystemMail :public NetCmd
+{
+	
+};
+
+#define MAX_SYSTEM_MAIL_COUNT 100
+struct DBO_Cmd_LoadAllSystemMail :public NetCmd
+{
+	tagOperatorSystemMail mail[MAX_SYSTEM_MAIL_COUNT];
+	BYTE			States;
+	WORD			Sum;
+};
+
 struct DBR_Cmd_LoadAllAnnouncement :public NetCmd
 {
 
@@ -4169,7 +4225,7 @@ enum MainCmd
 {
 	Main_Logon = 1,//登陆命令
 	Main_Table = 2,//桌子上的命令
-	Main_Game =	3,//游戏ID
+	Main_Game = 3,//游戏ID
 	Main_Center = 4,//与中央服务器的通讯
 	Main_Balanced = 5,//Gate与负载均衡之间的通讯
 
@@ -4192,28 +4248,54 @@ enum MainCmd
 	Main_Giff = 22,//赠送
 	//Main_GlobelShop = 23,
 	Main_OnlineReward = 24,
-	Main_Ftp		  = 25,
-	Main_GameData	  = 26,
-	Main_Package	  = 27,//礼包
-	Main_Launcher	  = 28,
-	Main_Message	  = 29,
-	Main_Recharge	  = 30,
+	Main_Ftp = 25,
+	Main_GameData = 26,
+	Main_Package = 27,//礼包
+	Main_Launcher = 28,
+	Main_Message = 29,
+	Main_Recharge = 30,
 	Main_Announcement = 31,
-	Main_Operate	  = 32,//运营 对外的服务
-	Main_RoleMessage  = 33,
-	Main_Exchange	  = 34,//兑换功能
-	Main_Lottery	  = 35,//抽奖
-	Main_Extra_Down	  = 36,//FTP下载命令
-	Main_MiniGame	  = 37,
-	Main_NiuNiu		  = 38,
-	Main_Char		  = 39,
+	Main_Operate = 32,//运营 对外的服务
+	Main_RoleMessage = 33,
+	Main_Exchange = 34,//兑换功能
+	Main_Lottery = 35,//抽奖
+	Main_Extra_Down = 36,//FTP下载命令
+	Main_MiniGame = 37,
+	Main_NiuNiu = 38,
+	Main_Char = 39,
 	Main_RelationRequest = 40,
-	Main_Dial         = 41,
-	Main_Car		  = 42,
+	Main_Dial = 41,
+	Main_Car = 42,
+	Main_OperatorSystemMail = 43,
 
 	Main_Server		  = 200,//服务器构架的流程
 	Main_Control	  = 201,//控制器
 };
+
+enum OperatorSystemMailCmd
+{
+	CG_AddOperatorSystemMail,
+	GC_GetAllSystemMail,
+	CG_GetAllSystemMail
+
+};
+struct CG_Cmd_AddNewOperatorMail : public NetCmd
+{
+	tagOperatorSystemMail mail;
+};
+
+struct GC_Cmd_GetAllOperatorSystemMail : public NetCmd
+{
+
+};
+
+
+struct CG_Cmd_GetAllOperatorSystemMail : public NetCmd
+{
+	tagOperatorSystemMail mail[MAX_SYSTEM_MAIL_COUNT];
+	int sum;
+};
+
 enum LogonCmd
 {
 	CL_AccountLogon = 1,
@@ -7305,6 +7387,8 @@ enum AnnouncementSub
 	//LC_GetAllAnnouncementFinish = 8,
 	LC_SendNewAnnouncementOnce =9,
 };
+
+
 struct GC_Cmd_GetAllAnnouncement : public NetCmd
 {
 
@@ -7758,6 +7842,12 @@ enum ControlSub
 
 	GM_CL_REWARD_CONFIGS_REQ = 104,
 	CL_GM_REWARD_CONFIGS_ACK = 105,
+
+	GM_ADD_NEW_OPERATOR_MAIL = 106,
+	
+	CENTRAL_GS_ADD_NEW_OPERATOR_MAIL = 107,
+	GS_CENTRAL_ALL_OPERATOR_MAIL_REQ = 108,
+	CENTRAL_GS_ALL_OPERATOR_MAIL_ACK = 109,
 
 };
 //牛牛,舞会,碰碰车通用
@@ -8518,6 +8608,10 @@ enum MiniGameSub
 //{
 //	
 //};
+struct GM_AddOperatorSystemMail : public NetCmd
+{	
+	tagOperatorSystemMail mail;
+};
 
 struct GM_Cmd_RoleJoinMiniGame : public NetCmd
 {

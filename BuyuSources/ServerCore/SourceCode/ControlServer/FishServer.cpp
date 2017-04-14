@@ -810,6 +810,11 @@ void FishServer::HandleGMToolMsg(ServerClientData* pClient, NetCmd* pCmd)
 		SendNetCmdToCenter(pMsg);
 	}
 	break;
+	case GM_ADD_NEW_OPERATOR_MAIL:
+	{
+		SendNetCmdToCenter(pCmd);
+	}
+	break;
 	case GM_CL_REWARD_CONFIGS_REQ:
 	{
 		tagRewardMap& rewardConfig = m_FishConfig.GetFishRewardConfig();

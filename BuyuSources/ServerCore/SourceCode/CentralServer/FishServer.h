@@ -35,6 +35,7 @@ public:
 	void SendNetCmdToFtp(NetCmd* pCmd);
 	void SendNetCmdToControl(NetCmd*pCmd);
 	void SendNetCmdToLogDB(NetCmd* pCmd);
+	void SendNetCmdToAllGameServer(NetCmd* pCmd);
 
 	FishConfig& GetFishConfig(){ return m_FishConfig; }
 	CenterRoleManager& GetRoleManager(){ return m_RoleManager; }
@@ -115,6 +116,7 @@ private:
 	AnnouncementManager							m_AnnouncementManager;
 
 	FishNoticeManager							m_FishNoticeManager;
+	
 
 	//连接到控制器
 	TCPClient									m_ControlTcp;
