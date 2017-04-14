@@ -153,6 +153,8 @@ public:
 	{
 		return m_RecvList;
 	}
+	virtual void NormalCall(HttpClientData *pc, const char* Time);
+
 protected:
 	bool	SplitStr(HttpClientData *pc, UINT endSize, HttpRecvData &strmap);
 	bool	CheckPostData(HttpClientData *pc, HttpRecvData &recvData);
@@ -165,4 +167,5 @@ protected:
 	HttpServerInitData	m_InitData;
 	ThreadRecvData		*m_pThreadRecvList;
 	HttpRecvList		m_RecvList;
+
 };
