@@ -241,4 +241,8 @@ pip-log.txt
 .tox
 BuyuSources/NewClient/Assets/Atlas
 BuyuSources/NewClient/Assets/NGUI
-BuyuSources/Packages
+BuyuSources/NewClient/NewClient.csproj
+BuyuSources/NewClient/Assets/Packages
+BuyuSources/NewClient/Assets/Packages.meta
+BuyuSources/NewClient/NewClient.Editor.csproj
+*.meta

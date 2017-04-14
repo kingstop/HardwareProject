@@ -186,7 +186,7 @@ public class HallLogicUI_Main:HallLoginUI_BaseWind
         //string[] TitleName = {"MainHal_ManyPeople2", "MainHal_Match2" , "MainHal_Coustoms2" };
         //int[] SpWidth = { 220, 252,222 };
         //int[] spHeight = { 174, 226, 230 };
-        //m_CenterLiftBtn.m_BtnTag = tag;
+        m_CenterLiftBtn.m_BtnTag = tag;
         //m_CenterLiftBtn.m_BGSp.spriteName = BgSpName[tag];
         //m_CenterLiftBtn.m_BGSp.width = SpWidth[tag];
         //m_CenterLiftBtn.m_BGSp.height = spHeight[tag];
@@ -263,6 +263,9 @@ public class HallLogicUI_Main:HallLoginUI_BaseWind
                 m_CenterRightBtn[i].m_Btn.m_IsChecked = false;
         }
         Center_L_BtnBgChange(checktag);
+
+        // Modify 2017/04/14
+        OnClickCenterLiftBtn(null);
     }
     void ONClickLiftBtn(GameObject go)
     {
