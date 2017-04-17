@@ -396,6 +396,19 @@ void GMToolManager::Notice(CString n)
 	g_dlg->Notice(n);
 }
 
+
+void GMToolManager::SendSystemOperatorMail(CString Context, int RewardID, int RewardSum, DWORD BeginTime, DWORD EndTime)
+{
+	GM_AddOperatorSystemMail msg;
+	wsprintf(msg.mail.Context, Context);
+	msg.mail.RewardID = RewardID;
+	msg.mail.RewardSum = RewardSum;
+	msg.mail.BeginTime = BeginTime;
+	msg.mail.EndTime = EndTime;
+	SetMsgInfo(msg, GetMsgType(Main_Control, GM_ADD_NEW_OPERATOR_MAIL), sizeof(GM_AddOperatorSystemMail));
+	SendNetCmdToControl(&msg);
+}
+
 void GMToolManager::SendSystemMail(DWORD UserID, CString Context, int RewardID, int RewardSum)
 {
 	CL_Cmd_SendSystemEmail msg;

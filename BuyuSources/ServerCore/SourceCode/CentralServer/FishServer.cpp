@@ -147,6 +147,7 @@ void FishServer::OnCenterFinish()
 	}
 	SendGetAchievementList();
 	m_AnnouncementManager.OnLoadAllAnnouncementByDB();
+	m_OperatorMailManager.OnLoadSystemMailByDB();
 	ShowInfoToWin("中央服务器启动成功");
 	return;
 }
@@ -1910,6 +1911,21 @@ bool FishServer::HandleGameServerMsg(ServerClientData* pClient, NetCmd* pCmd)
 			}
 		}
 	}
+	else if(pCmd->CmdType == Main_OperatorSystemMail)
+	{
+		switch (pCmd->SubCmdType)
+		{
+		case GC_GetAllSystemMail:
+			{
+				GC_Cmd_GetAllOperatorSystemMail* pMsg = (GC_Cmd_GetAllOperatorSystemMail*)pCmd;
+				
+			}
+			break;
+		default:
+			break;
+		}
+
+	}
 	else if (pCmd->CmdType == Main_Message)
 	{
 		switch (pCmd->SubCmdType)
@@ -2532,6 +2548,13 @@ bool FishServer::HandleDataBaseMsg(NetCmd* pCmd)
 			m_AnnouncementManager.OnLoadAllAnnouncementByDBResult(pMsg);
 			return true;
 		}
+		break;
+	case DBO_LOAD_OPERATOR_SYSTEM_MAIL:
+		{
+			DBO_Cmd_LoadAllSystemMail* pMsg = (DBO_Cmd_LoadAllSystemMail*)pCmd;
+			m_OperatorMailManager.OnLoadSystemMail(pMsg);
+		}
+		break;
 	/*case DBO_LoadAllAnnouncementFinish:
 		{
 			DBO_Cmd_LoadAllAnnouncementFinish* pMsg = (DBO_Cmd_LoadAllAnnouncementFinish*)pCmd;
@@ -2620,7 +2643,7 @@ bool FishServer::HandleDataBaseMsg(NetCmd* pCmd)
 			GM_AddOperatorSystemMail* pMsg = (GM_AddOperatorSystemMail*)pCmd;
 			if (pMsg->mail.ID != 0)
 			{
-
+				m_OperatorMailManager.AddNewMail(pMsg->mail);
 			}
 		}
 		break;

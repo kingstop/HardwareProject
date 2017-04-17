@@ -7,6 +7,7 @@
 #include "ClientListManager.h"
 #include "AnnouncementManager.h"
 #include "FishNoticeManager.h"
+#include "OperatorSystemMailManager.h"
 #include "..\CommonFile\RobotManager.h"
 
 class FishServer : public INetHandler
@@ -114,6 +115,7 @@ private:
 	HashMap<DWORD, WORD>						m_AchievementList;
 	//¹«¸æ
 	AnnouncementManager							m_AnnouncementManager;
+	OperatorSystemMailManager                   m_OperatorMailManager;
 
 	FishNoticeManager							m_FishNoticeManager;
 	

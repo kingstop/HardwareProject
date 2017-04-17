@@ -8,6 +8,7 @@ public:
 	void AddNewMail(tagOperatorSystemMail& mail);
 	void OnLoadSystemMailByDB();
 	void OnLoadSystemMail(DBO_Cmd_LoadAllSystemMail* pMsg);
+	const MAILS* GetMails();
 protected:
 	MAILS _OperatorMails;
 };

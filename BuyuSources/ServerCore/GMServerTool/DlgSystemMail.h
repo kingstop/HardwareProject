@@ -1,9 +1,16 @@
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"
+#include "afxdtctl.h"
 
 
 // DlgSystemMail 对话框
+
+enum DlgSystemMailType
+{
+	DlgSystemMailType_SinglePlayer,
+	DlgSystemMailType_SomePlayers
+};
 
 class DlgSystemMail : public CDialogEx
 {
@@ -23,10 +30,12 @@ protected:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 	virtual BOOL OnInitDialog();
+	DlgSystemMailType _DlgType;
 	DECLARE_MESSAGE_MAP()
 public:
 	void SetNickName(CString& NickName);
 	void SetUserID(DWORD UserID);
+	void SetDlgType(DlgSystemMailType type);
 public:
 	CListBox _ListRewards;
 	CListCtrl _ListCtrlRewardItems;
@@ -35,4 +44,7 @@ public:
 	afx_msg void OnLbnSelchangeListRewardId();
 	afx_msg void OnBnClickedOk();
 	
+	CDateTimeCtrl _CtrlBeginTime;
+	CDateTimeCtrl _CtrlEndTime;
+
 };

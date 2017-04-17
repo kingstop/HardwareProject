@@ -41,4 +41,5 @@ public:
 	afx_msg void OnListSendSystemMail();
 	afx_msg void OnListNotice();
 	afx_msg void OnBnClickedBtnSendMsg();
+	afx_msg void OnBnClickedBtnSendOperatorMail();
 };

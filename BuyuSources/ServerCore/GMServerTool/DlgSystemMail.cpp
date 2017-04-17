@@ -14,7 +14,8 @@ IMPLEMENT_DYNAMIC(DlgSystemMail, CDialogEx)
 DlgSystemMail::DlgSystemMail(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_DLG_SYSTEM_MAIL, pParent)
 {
-
+	_NickName = "";
+	_UserID = 0;
 }
 
 DlgSystemMail::~DlgSystemMail()
@@ -26,6 +27,8 @@ void DlgSystemMail::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST_REWARD_ID, _ListRewards);
 	DDX_Control(pDX, IDC_LIST_CTRL_ITEMS, _ListCtrlRewardItems);
+	DDX_Control(pDX, IDC_DATETIMEPICKER_BEGIN, _CtrlBeginTime);
+	DDX_Control(pDX, IDC_DATETIMEPICKER_END, _CtrlEndTime);
 }
 BOOL DlgSystemMail::OnInitDialog()
 {
@@ -61,7 +64,29 @@ BOOL DlgSystemMail::OnInitDialog()
 	{
 		_ListRewards.SetCurSel(0);
 	}
+	SetDlgItemText(IDC_EDIT_TIME_BEGIN, TEXT("开始时间"));
+	SetDlgItemText(IDC_EDIT_TIME_END, TEXT("结束时间"));
+	CTime timeTime(2017, 4, 3, 0, 0, 0);
+	_CtrlBeginTime.SetTime(&timeTime);
+	_CtrlEndTime.SetTime(&timeTime);
+	switch (_DlgType)
+	{
+	case DlgSystemMailType_SinglePlayer:		
+		_CtrlBeginTime.ShowWindow(FALSE);
+		_CtrlEndTime.ShowWindow(FALSE);
+		GetDlgItem(IDC_EDIT_TIME_BEGIN)->ShowWindow(FALSE);
+		break;
+	case DlgSystemMailType_SomePlayers:
+		_CtrlBeginTime.ShowWindow(TRUE);
+		_CtrlEndTime.ShowWindow(TRUE);
+		GetDlgItem(IDC_EDIT_TIME_BEGIN)->ShowWindow(TRUE);
+		break;
+	default:
+		break;
+	}
 	
+
+
 	return TRUE;
 }
 
@@ -137,7 +162,21 @@ void DlgSystemMail::OnBnClickedOk()
 	}
 	CString Context;
 	GetDlgItemText(IDC_EDIT_CONTEXT, Context);
-	g_GMToolManager.SendSystemMail(UserID, Context, Reward_id, Reward_count);
+	if (_DlgType == DlgSystemMailType_SinglePlayer)
+	{
+		g_GMToolManager.SendSystemMail(UserID, Context, Reward_id, Reward_count);
+	}
+	else
+	{
+		CTime timeTime_Begin;
+		CTime timeTime_End;
+		_CtrlBeginTime.GetTime(timeTime_Begin);
+		_CtrlEndTime.GetTime(timeTime_End);
+		unsigned long begin_time = timeTime_Begin.GetTime();
+		unsigned long end_time = timeTime_End.GetTime();
+		g_GMToolManager.SendSystemOperatorMail(Context, Reward_id, Reward_count, begin_time, end_time);
+	}
+	
 
 	// TODO: 在此添加控件通知处理程序代码
 	CDialogEx::OnOK();
@@ -149,4 +188,9 @@ void DlgSystemMail::SetNickName(CString& NickName)
 void DlgSystemMail::SetUserID(DWORD UserID)
 {
 	_UserID = UserID;
+}
+
+void DlgSystemMail::SetDlgType(DlgSystemMailType type)
+{
+	_DlgType = type;
 }

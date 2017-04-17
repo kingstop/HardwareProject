@@ -39,6 +39,7 @@ BEGIN_MESSAGE_MAP(DlgGMToolListPage, CDialogEx)
 	ON_COMMAND(ID_LIST_SEND_SYSTEM_MAIL, &DlgGMToolListPage::OnListSendSystemMail)
 	ON_COMMAND(ID_LIST_NOTICE, &DlgGMToolListPage::OnListNotice)
 	ON_BN_CLICKED(IDC_BTN_SEND_MSG, &DlgGMToolListPage::OnBnClickedBtnSendMsg)
+	ON_BN_CLICKED(IDC_BTN_SEND_OPERATOR_MAIL, &DlgGMToolListPage::OnBnClickedBtnSendOperatorMail)
 END_MESSAGE_MAP()
 
 
@@ -322,6 +323,7 @@ void DlgGMToolListPage::OnListSendSystemMail()
 	DlgSystemMail dlg;
 	tagRoleInfo* info = (tagRoleInfo*)m_ListCtrlRoles.GetItemData(_CurCtrlPop);
 	dlg.SetUserID(info->dwUserID);
+	dlg.SetDlgType(DlgSystemMailType_SinglePlayer);
 	CString nickname;
 	nickname.Format(info->NickName);
 	dlg.SetNickName(nickname);
@@ -349,5 +351,18 @@ void DlgGMToolListPage::OnListNotice()
 void DlgGMToolListPage::OnBnClickedBtnSendMsg()
 {
 	OnListNotice();
+	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void DlgGMToolListPage::OnBnClickedBtnSendOperatorMail()
+{
+	DlgSystemMail dlg;
+	tagRoleInfo* info = (tagRoleInfo*)m_ListCtrlRoles.GetItemData(_CurCtrlPop);	
+	dlg.SetDlgType(DlgSystemMailType_SomePlayers);
+	if (dlg.DoModal() == IDOK)
+	{
+		//处理完毕后的操作
+	}
 	// TODO: 在此添加控件通知处理程序代码
 }

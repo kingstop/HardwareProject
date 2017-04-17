@@ -45,3 +45,8 @@ void OperatorSystemMailManager::OnLoadSystemMail(DBO_Cmd_LoadAllSystemMail* pMsg
 		_OperatorMails[pMsg->mail[i].ID] = pMsg->mail[i];
 	}
 }
+
+const OperatorSystemMailManager::MAILS* OperatorSystemMailManager::GetMails()
+{
+	return &_OperatorMails;
+}

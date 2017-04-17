@@ -19,7 +19,18 @@ public:
 	void StringToChar(const CString s, char *Destination);
 	void Notice(CString n);
 	void SendSystemMail(DWORD UserID, CString Context, int RewardID, int RewardSum);
+	void SendSystemOperatorMail(CString Context, int RewardID, int RewardSum, DWORD BeginTime, DWORD EndTime);
 	void SendMsgToAllGame(CString Context, int Sum, int Sec, int param, DWORD color);
+
+	/*
+	TCHAR		Context[MAX_MAIL_CONTEXT + 1];//邮件内容
+	WORD		RewardID;
+	DWORD		RewardSum;//奖励的数量
+
+	DWORD	BeginTime;
+	DWORD   EndTime;
+	DWORD   ID;
+	*/
 public:
 	std::map<DWORD, tagRoleInfo>* GetRoleList();
 	std::map<DWORD, tagRewardOnce>* GetRewards();

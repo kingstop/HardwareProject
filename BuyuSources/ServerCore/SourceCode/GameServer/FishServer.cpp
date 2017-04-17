@@ -701,7 +701,7 @@ void FishServer::OnConnectionCenterServer()
 	}
 
 	m_AnnouncementManager.OnConnectionCenter();//申请获取中央服务器公告数据
-
+	_SystemMailManager.OnConnectCentralServer();
 	m_IsSendUserInfo = true;
 }
 void FishServer::OnLeaveCenterServer()
