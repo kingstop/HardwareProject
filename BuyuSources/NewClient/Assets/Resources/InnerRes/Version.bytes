@@ -6,9 +6,9 @@
     <!-- 资源版本号 -->
     <Resource>0_0_3_5</Resource>
     <!-- SDK类型 0：自有散包、1：渠道包、2：派生包 -->
-    <Sdk>0</Sdk>
+    <Sdk>1</Sdk>
     <!-- 是否是测试版本 0：不是、1：是 -->
-    <Test>1</Test>
+    <Test>0</Test>
     <!-- 是否强制为Editor版本 0：不是、1：是 ,使用Editor服务器配置节点-->
     <Editor>1</Editor> 
     <!-- 显示Ping-->
