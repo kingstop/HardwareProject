@@ -3442,7 +3442,7 @@ MapName="4">
    	ID:18  独家礼包：5W金币，30个钻石
   -->
     <ExChange ID="1" TypeID="2" ChannelID="xiaomi" RewardID="1100" />
-    <ExChange ID="2" TypeID="4" ChannelID="" RewardID="1101" />
+    <!--<ExChange ID="2" TypeID="4" ChannelID="" RewardID="1101" />-->
     <ExChange ID="3" TypeID="8" ChannelID="xiaomi" RewardID="1102" />
     <ExChange ID="4" TypeID="16" ChannelID="xiaomi" RewardID="1103" />
     <ExChange ID="5" TypeID="32" ChannelID="xiaomi" RewardID="1104" />
@@ -3455,8 +3455,8 @@ MapName="4">
     <ExChange ID="12" TypeID="16" ChannelID="liebao" RewardID="1103" />
     <ExChange ID="13" TypeID="32" ChannelID="liebao" RewardID="1104" />
     <ExChange ID="14" TypeID="64" ChannelID="chuyou" RewardID="1107" />
-    <ExChange ID="15" TypeID="128" ChannelID="" RewardID="1108" />
-    <ExChange ID="16" TypeID="1" ChannelID="" RewardID="1106" />
+    <!--<ExChange ID="15" TypeID="128" ChannelID="" RewardID="1108" />-->
+    <!--<ExChange ID="16" TypeID="1" ChannelID="" RewardID="1106" />-->
   </FishExChanges>
   <FishLevelReward>
     <!--

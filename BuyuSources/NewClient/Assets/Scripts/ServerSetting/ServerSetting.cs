@@ -53,9 +53,9 @@ public class ServerSetting
     public static ushort    ReporterPort;
     public static int       ConnectServerIdx = -1;
     public static uint      ClientVer;
-    public static bool      ShowExchange = true;    //对换
+    public static bool      ShowExchange = false;    //对换
     public static bool      ShowExtraBtn = true;
-    public static bool      ShowGame = true;
+    public static bool      ShowGame = false;
     public static bool      ShowHallThirdBtn = true;
     public static bool      ShowJBP = true;
     public static string    ShareWebUrl = "", ShareTxt = "", ShareImgUrl = "";

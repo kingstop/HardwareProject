@@ -43,19 +43,19 @@ public class BuildHelper
             case PlatformType.Android:
                 targetGroup = BuildTargetGroup.Android;
                 buildTarget = BuildTarget.Android;
-                PlayerSettings.bundleIdentifier = "com.leduo.buyu";
+                PlayerSettings.applicationIdentifier = "com.leduo.buyu";
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(targetGroup, "BUYU_PUBLISH");
                 break;
             case PlatformType.IOS:
                 targetGroup = BuildTargetGroup.iOS;
                 buildTarget = BuildTarget.iOS;
-                PlayerSettings.bundleIdentifier = "com.52leduo.buyu";
+                PlayerSettings.applicationIdentifier = "com.52leduo.buyu";
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(targetGroup, "BUYU_PUBLISH");
                 break;
             case PlatformType.Windows:
                 targetGroup = BuildTargetGroup.Standalone;
                 buildTarget = BuildTarget.StandaloneWindows;
-                PlayerSettings.bundleIdentifier = "com.52leduo.buyu";
+                PlayerSettings.applicationIdentifier = "com.52leduo.buyu";
                 PlayerSettings.SetScriptingDefineSymbolsForGroup(targetGroup, "BUYU_PUBLISH");
                 break;
             default:

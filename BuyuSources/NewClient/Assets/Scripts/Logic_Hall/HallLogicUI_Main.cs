@@ -65,8 +65,8 @@ public class HallLogicUI_Main:HallLoginUI_BaseWind
             GetBtnLister(m_CenterRightBtn[i].m_Btn.m_BtnObj).onClick = OnCheckCenterRightBtn;
             m_CenterRightBtn[i].m_Tween.m_alpha = m_CenterRightBtn[i].m_Btn.m_Btn.gameObject.GetComponent<TweenAlpha>();
             m_CenterRightBtn[i].m_Tween.m_Pos = m_CenterRightBtn[i].m_Btn.m_Btn.gameObject.GetComponent<TweenPosition>();
-            GameObject GEobj = GameObject.Instantiate(m_EffectRigthBtn[i]) as GameObject;
-            GEobj.transform.SetParent(m_CenterRightBtn[i].m_Btn.m_BtnObj.transform,false);
+            //GameObject GEobj = GameObject.Instantiate(m_EffectRigthBtn[i]) as GameObject;
+            //GEobj.transform.SetParent(m_CenterRightBtn[i].m_Btn.m_BtnObj.transform,false);
         }
         m_CenterRightBtn[2].m_Btn.m_BtnObj.SetActive(ServerSetting.ShowHallThirdBtn);
         //left
@@ -182,48 +182,58 @@ public class HallLogicUI_Main:HallLoginUI_BaseWind
     }
     void Center_L_BtnBgChange(byte tag)
     {
-        string[] BgSpName = {"MainHal_ManyPeople1","MainHal_Match1","MainHal_Coustoms1"};
-        string[] TitleName = {"MainHal_ManyPeople2", "MainHal_Match2" , "MainHal_Coustoms2" };
-        int[] SpWidth = { 220, 252,222 };
-        int[] spHeight = { 174, 226, 230 };
+        //string[] BgSpName = {"MainHal_ManyPeople1","MainHal_Match1","MainHal_Coustoms1"};
+        //string[] TitleName = {"MainHal_ManyPeople2", "MainHal_Match2" , "MainHal_Coustoms2" };
+        //int[] SpWidth = { 220, 252,222 };
+        //int[] spHeight = { 174, 226, 230 };
         m_CenterLiftBtn.m_BtnTag = tag;
-        m_CenterLiftBtn.m_BGSp.spriteName = BgSpName[tag];
-        m_CenterLiftBtn.m_BGSp.width = SpWidth[tag];
-        m_CenterLiftBtn.m_BGSp.height = spHeight[tag];
-        m_CenterLiftBtn.m_Title.spriteName = TitleName[tag];
-        if (tag == 0)
-        {
-            if (m_CenterLiftBtn.m_Lock.activeSelf)
-                m_CenterLiftBtn.m_Lock.SetActive(false);
-            m_CenterLiftBtn.m_Btn.m_Btn.isEnabled = true;
-        }
-        else 
-        {
-            if (m_CenterRightBtn[tag].m_Lock.activeSelf)
-            {
-                m_CenterLiftBtn.m_Lock.SetActive(true);
-                m_CenterLiftBtn.m_Btn.m_Btn.isEnabled = false;
-            }
-            else
-            {
-                m_CenterLiftBtn.m_Lock.SetActive(false);
-                m_CenterLiftBtn.m_Btn.m_Btn.isEnabled = true;
-            }
-        }
+        //m_CenterLiftBtn.m_BGSp.spriteName = BgSpName[tag];
+        //m_CenterLiftBtn.m_BGSp.width = SpWidth[tag];
+        //m_CenterLiftBtn.m_BGSp.height = spHeight[tag];
+        //m_CenterLiftBtn.m_Title.spriteName = TitleName[tag];
+        //if (tag == 0)
+        //{
+        //    if (m_CenterLiftBtn.m_Lock.activeSelf)
+        //        m_CenterLiftBtn.m_Lock.SetActive(false);
+        //    m_CenterLiftBtn.m_Btn.m_Btn.isEnabled = true;
+        //}
+        //else 
+        //{
+        //    if (m_CenterRightBtn[tag].m_Lock.activeSelf)
+        //    {
+        //        m_CenterLiftBtn.m_Lock.SetActive(true);
+        //        m_CenterLiftBtn.m_Btn.m_Btn.isEnabled = false;
+        //    }
+        //    else
+        //    {
+        //        m_CenterLiftBtn.m_Lock.SetActive(false);
+        //        m_CenterLiftBtn.m_Btn.m_Btn.isEnabled = true;
+        //    }
+        //}
 
-        for (byte i = 0; i < m_CenterLiftBtn.m_Effect.Length; ++i)
-        {
-            if (i == tag)
-            {
-                if (!m_CenterLiftBtn.m_Effect[i].activeSelf)
-                    m_CenterLiftBtn.m_Effect[i].SetActive(true);
-            }
-            else
-            {
-                if (m_CenterLiftBtn.m_Effect[i].activeSelf)
-                    m_CenterLiftBtn.m_Effect[i].SetActive(false);
-            }
+        //for (byte i = 0; i < m_CenterLiftBtn.m_Effect.Length; ++i)
+        //{
+        //    if (i == tag)
+        //    {
+        //        if (!m_CenterLiftBtn.m_Effect[i].activeSelf)
+        //            m_CenterLiftBtn.m_Effect[i].SetActive(true);
+        //    }
+        //    else
+        //    {
+        //        if (m_CenterLiftBtn.m_Effect[i].activeSelf)
+        //            m_CenterLiftBtn.m_Effect[i].SetActive(false);
+        //    }
                 
+        //}
+
+        int count = m_INfObj[1].transform.childCount;
+        for (int i = 0; i < count; i++)
+        {
+            Transform child = m_INfObj[1].transform.GetChild(i);
+            if (child != null && child.gameObject.activeSelf)
+            {
+                child.gameObject.SetActive(false);
+            }
         }
     }
     void OnCheckCenterRightBtn(GameObject go)
@@ -253,6 +263,9 @@ public class HallLogicUI_Main:HallLoginUI_BaseWind
                 m_CenterRightBtn[i].m_Btn.m_IsChecked = false;
         }
         Center_L_BtnBgChange(checktag);
+
+        // Modify 2017/04/14
+        OnClickCenterLiftBtn(null);
     }
     void ONClickLiftBtn(GameObject go)
     {
